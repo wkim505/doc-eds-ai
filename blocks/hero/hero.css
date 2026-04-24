@@ -1,37 +1,236 @@
+/* ============================================================
+ * Hero block
+ * Variants: no-image, with-subtitle, with-cta, section-themed
+ * Themes: ranginui (blue), paptuanuku (green), atawhenua (earth), weta (dark)
+ * ============================================================ */
+
 .hero-container .hero-wrapper {
   max-width: unset;
   padding: 0;
 }
 
+/* Base hero layout */
 .hero {
   position: relative;
-  padding: 40px 24px;
-  min-height: 300px;
+  display: flex;
+  align-items: flex-end;
+  min-height: 320px;
+  overflow: hidden;
+  color: var(--clr-white, #fff);
 }
 
-.hero h1 {
-  max-width: 1200px;
-  margin-left: auto;
-  margin-right: auto;
-  color: var(--background-color);
-}
-
-.hero picture {
+/* Background picture fills the entire hero */
+.hero > picture {
   position: absolute;
-  z-index: -1;
   inset: 0;
-  object-fit: cover;
-  box-sizing: border-box;
+  z-index: 0;
+  display: block;
+  line-height: 0;
 }
 
-.hero img {
-  object-fit: cover;
+.hero > picture img {
   width: 100%;
   height: 100%;
+  object-fit: cover;
+  object-position: center top;
 }
 
+/* Dark gradient overlay for legibility */
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    to top,
+    rgb(0 0 0 / 70%) 0%,
+    rgb(0 0 0 / 30%) 50%,
+    rgb(0 0 0 / 0%) 100%
+  );
+}
+
+/* Content overlay sits above the gradient */
+.hero .hero-content {
+  position: relative;
+  z-index: 2;
+  padding: 40px 24px;
+  max-width: var(--max-content-width, 1200px);
+  margin-inline: auto;
+  width: 100%;
+}
+
+/* Headings */
+.hero .hero-content h1,
+.hero .hero-content h2,
+.hero .hero-content h3 {
+  margin: 0 0 12px;
+  font-family: var(--heading-font-family);
+  font-size: var(--heading-font-size-xl);
+  color: var(--clr-white, #fff);
+  line-height: 1.1;
+  text-shadow: 0 1px 4px rgb(0 0 0 / 40%);
+}
+
+/* Body / intro text */
+.hero .hero-body {
+  margin-block-end: 20px;
+}
+
+.hero .hero-body p {
+  margin: 0 0 8px;
+  font-size: var(--body-font-size-m);
+  color: rgb(255 255 255 / 90%);
+  max-width: 640px;
+  text-shadow: 0 1px 3px rgb(0 0 0 / 30%);
+}
+
+/* CTA actions row */
+.hero .hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-block-start: 24px;
+}
+
+.hero .hero-actions .button {
+  display: inline-block;
+  padding: 12px 28px;
+  border-radius: 4px;
+  font-family: var(--heading-font-family);
+  font-size: var(--body-font-size-s);
+  font-weight: 700;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.hero .hero-actions .button.primary {
+  background-color: var(--hero-theme-color, var(--link-color));
+  color: var(--clr-white, #fff);
+  border: 2px solid transparent;
+}
+
+.hero .hero-actions .button.primary:hover {
+  background-color: transparent;
+  color: var(--clr-white, #fff);
+  border-color: var(--clr-white, #fff);
+}
+
+.hero .hero-actions .button.secondary {
+  background-color: transparent;
+  color: var(--clr-white, #fff);
+  border: 2px solid var(--clr-white, #fff);
+}
+
+.hero .hero-actions .button.secondary:hover {
+  background-color: var(--clr-white, #fff);
+  color: var(--text-color);
+}
+
+/* ============================================================
+ * No-image variant
+ * ============================================================ */
+.hero.no-image {
+  background-color: var(--hero-theme-color, var(--dark-color));
+  min-height: 200px;
+}
+
+.hero.no-image::after {
+  display: none;
+}
+
+/* ============================================================
+ * Section theme variants
+ * ============================================================ */
+.hero[data-theme='ranginui'] {
+  --hero-theme-color: var(--color-ranginui);
+}
+
+.hero[data-theme='paptuanuku'] {
+  --hero-theme-color: var(--color-paptuanuku);
+}
+
+.hero[data-theme='atawhenua'] {
+  --hero-theme-color: var(--color-atawhenua);
+}
+
+.hero[data-theme='weta'] {
+  --hero-theme-color: var(--color-weta);
+}
+
+/* Themed accent bar at the bottom of the hero */
+.hero[data-theme]::before {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 3;
+  height: 6px;
+  background-color: var(--hero-theme-color);
+}
+
+/* ============================================================
+ * Responsive — tablet (>= 600px)
+ * ============================================================ */
+@media (width >= 600px) {
+  .hero {
+    min-height: 420px;
+  }
+
+  .hero .hero-content {
+    padding: 48px 32px;
+  }
+
+  .hero .hero-content h1,
+  .hero .hero-content h2,
+  .hero .hero-content h3 {
+    font-size: var(--heading-font-size-xxl);
+  }
+}
+
+/* ============================================================
+ * Responsive — desktop (>= 900px)
+ * ============================================================ */
 @media (width >= 900px) {
   .hero {
-    padding: 40px 32px;
+    min-height: 520px;
+  }
+
+  .hero .hero-content {
+    padding: 64px 40px;
+  }
+}
+
+/* ============================================================
+ * Print styles
+ * ============================================================ */
+@media print {
+  .hero {
+    min-height: unset;
+    color: var(--text-color);
+  }
+
+  .hero > picture,
+  .hero::after,
+  .hero[data-theme]::before {
+    display: none;
+  }
+
+  .hero .hero-content h1,
+  .hero .hero-content h2,
+  .hero .hero-content h3 {
+    color: var(--text-color);
+    text-shadow: none;
+  }
+
+  .hero .hero-body p {
+    color: var(--text-color);
+    text-shadow: none;
+  }
+
+  .hero .hero-actions {
+    display: none;
   }
 }

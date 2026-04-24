@@ -18,7 +18,14 @@
   --text-color: #131313;
   --link-color: #3b63fb;
   --link-hover-color: #1d3ecf;
-  --overlay-background-color:lightgrey;
+  --overlay-background-color: lightgrey;
+  --clr-white: #fff;
+
+  /* DOC NZ brand section colours — confirm hex values with design team */
+  --color-ranginui: #005b99;   /* Parks & Recreation — deep blue */
+  --color-paptuanuku: #3a7d2c; /* Nature — forest green */
+  --color-atawhenua: #b05d2e;  /* Get Involved — earth/terracotta */
+  --color-weta: #3d3228;       /* Our Work — dark brown */
 
   /* fonts */
   --body-font-family: roboto, roboto-fallback, sans-serif;
