@@ -1,10 +1,22 @@
 import { getMetadata } from '../../scripts/aem.js';
 
 /**
- * Applies the section theme to the hero block.
- * Theme is read from page metadata (`section-theme`) and set as a data attribute
- * on the block so CSS can apply brand colour variations.
- * @param {Element} block the hero block element
+ * Sets fetchpriority="high" and loading="eager" on the LCP image.
+ * The EDS platform defaults to lazy loading; hero images should always be eager.
+ * @param {HTMLPictureElement} picture
+ */
+function optimiseLcp(picture) {
+  const img = picture.querySelector('img');
+  if (!img) return;
+  img.setAttribute('fetchpriority', 'high');
+  img.setAttribute('loading', 'eager');
+}
+
+/**
+ * Reads the section-theme metadata value and sets it as a data attribute
+ * on the block so CSS can apply brand-colour variations without JS logic.
+ * Accepted values: ranginui | paptuanuku | atawhenua | weta
+ * @param {Element} block
  */
 function applyTheme(block) {
   const theme = getMetadata('section-theme');
@@ -12,56 +24,74 @@ function applyTheme(block) {
 }
 
 /**
- * Promotes the hero image as the LCP candidate by setting fetchpriority="high"
- * and removing the default lazy-loading attribute added by the platform.
- * @param {HTMLPictureElement} picture the hero picture element
+ * Separates CTA paragraphs (containing an <a>) from body-copy paragraphs.
+ * @param {HTMLParagraphElement[]} paras
+ * @returns {{ bodyParas: HTMLParagraphElement[], ctaParas: HTMLParagraphElement[] }}
  */
-function optimiseForLcp(picture) {
-  const img = picture.querySelector('img');
-  if (!img) return;
-  img.setAttribute('fetchpriority', 'high');
-  img.removeAttribute('loading');
+function splitParas(paras) {
+  return {
+    bodyParas: paras.filter((p) => !p.querySelector('a')),
+    ctaParas: paras.filter((p) => p.querySelector('a')),
+  };
 }
 
 /**
- * Builds the hero content overlay from heading, body paragraphs, and CTA links.
- * @param {Element} contentCell the authored content cell (second column)
- * @returns {HTMLElement} the structured content div
+ * Builds the content overlay element from the heading, intro text, and CTAs.
+ * @param {Element[]} contentCells - all non-picture cells across all rows
+ * @returns {HTMLDivElement}
  */
-function buildContent(contentCell) {
+function buildContent(contentCells) {
   const content = document.createElement('div');
   content.className = 'hero-content';
 
-  if (!contentCell) return content;
+  if (!contentCells.length) return content;
 
-  const heading = contentCell.querySelector('h1, h2, h3');
-  if (heading) content.append(heading);
+  // Collect all content from every cell in document order
+  const allChildren = contentCells.flatMap((cell) => [...cell.children]);
 
-  const paras = [...contentCell.querySelectorAll('p')];
-  const ctaParas = paras.filter((p) => p.querySelector('a'));
-  const bodyParas = paras.filter((p) => !p.querySelector('a'));
+  const heading = allChildren.find((el) => /^H[1-3]$/.test(el.tagName));
+  const paras = allChildren.filter((el) => el.tagName === 'P');
+  const { bodyParas, ctaParas } = splitParas(paras);
+
+  if (heading) {
+    // Ensure the heading is h1 for correct semantic hierarchy
+    if (heading.tagName !== 'H1') {
+      const h1 = document.createElement('h1');
+      h1.innerHTML = heading.innerHTML;
+      heading.replaceWith(h1);
+      content.append(h1);
+    } else {
+      content.append(heading);
+    }
+  }
 
   if (bodyParas.length) {
-    const body = document.createElement('div');
-    body.className = 'hero-body';
-    body.append(...bodyParas);
-    content.append(body);
+    const intro = document.createElement('div');
+    intro.className = 'hero-intro';
+    intro.append(...bodyParas);
+    content.append(intro);
   }
 
   if (ctaParas.length) {
     const actions = document.createElement('div');
     actions.className = 'hero-actions';
-    ctaParas.forEach((p, i) => {
+
+    ctaParas.forEach((p, idx) => {
       const a = p.querySelector('a');
       if (!a) return;
-      a.className = i === 0 ? 'button primary' : 'button secondary';
+
+      a.className = idx === 0 ? 'hero-cta hero-cta-primary' : 'hero-cta hero-cta-secondary';
+
+      // Flag external links for safe target="_blank"
       if (a.hostname && a.hostname !== window.location.hostname) {
         a.setAttribute('target', '_blank');
         a.setAttribute('rel', 'noopener noreferrer');
       }
+
       actions.append(a);
     });
-    content.append(actions);
+
+    if (actions.childElementCount) content.append(actions);
   }
 
   return content;
@@ -70,38 +100,61 @@ function buildContent(contentCell) {
 /**
  * Decorates the hero block.
  *
- * Authored content model (Google Doc table):
- * | hero        |                          |
- * |-------------|--------------------------|
- * | [image]     | Heading text             |
- * |             | Optional body text       |
- * |             | [Optional CTA link text] |
+ * ## Authoring (Google Doc / SharePoint table)
  *
- * Variants (via block classes): no-image, with-subtitle, with-cta, section-themed
- * Section themes (via page metadata `section-theme`): ranginui | paptuanuku | atawhenua | weta
+ * Two-row layout (image row + content row):
+ * ┌──────────────────────────────┐
+ * │ hero                         │
+ * ├──────────────────────────────┤
+ * │ [background image]           │
+ * ├──────────────────────────────┤
+ * │ Page heading (h1)            │
+ * │ Optional intro paragraph     │
+ * │ [Optional CTA link text]     │
+ * └──────────────────────────────┘
  *
- * @param {Element} block the hero block element
+ * OR single-row layout (image | heading side-by-side):
+ * ┌──────────────────┬───────────┐
+ * │ hero             │           │
+ * ├──────────────────┼───────────┤
+ * │ [image]          │ Heading   │
+ * │                  │ Intro     │
+ * │                  │ [CTA]     │
+ * └──────────────────┴───────────┘
+ *
+ * ## Page metadata
+ * - `section-theme`: ranginui | paptuanuku | atawhenua | weta
+ *
+ * ## Variants (via block classes in doc table header)
+ * - `hero`              — standard (image + heading)
+ * - `hero with-intro`   — image + heading + intro paragraph
+ * - `hero with-cta`     — image + heading + CTA button
+ * - `hero no-image`     — section-colour background, no image (auto-set when no picture authored)
+ * - `hero section-themed` — explicit theme class (alternative to metadata)
+ *
+ * @param {Element} block
  */
 export default function decorate(block) {
-  const row = block.querySelector(':scope > div');
-  if (!row) return;
+  const rows = [...block.querySelectorAll(':scope > div')];
+  if (!rows.length) return;
 
-  const [pictureCell, contentCell] = [...row.children];
-
-  const picture = pictureCell?.querySelector('picture');
+  // Find the hero background picture from any cell in any row
+  const picture = block.querySelector('picture');
   const hasImage = !!picture;
 
   if (hasImage) {
-    optimiseForLcp(picture);
+    optimiseLcp(picture);
   } else {
     block.classList.add('no-image');
   }
 
-  // Fall back to pictureCell for content if block is single-column
-  const content = buildContent(contentCell ?? pictureCell);
+  // Gather all cells that do not contain a picture as content cells
+  const contentCells = rows.flatMap((row) => [...row.children].filter((cell) => !cell.querySelector('picture')));
 
+  const content = buildContent(contentCells);
   applyTheme(block);
 
+  // Rebuild block with clean structure
   if (hasImage) {
     block.replaceChildren(picture, content);
   } else {

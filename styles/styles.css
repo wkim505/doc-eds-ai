@@ -21,11 +21,19 @@
   --overlay-background-color: lightgrey;
   --clr-white: #fff;
 
-  /* DOC NZ brand section colours — confirm hex values with design team */
-  --color-ranginui: #005b99;   /* Parks & Recreation — deep blue */
-  --color-paptuanuku: #3a7d2c; /* Nature — forest green */
-  --color-atawhenua: #b05d2e;  /* Get Involved — earth/terracotta */
-  --color-weta: #3d3228;       /* Our Work — dark brown */
+  /* DOC NZ brand colours (confirmed from live site CSS) */
+  --color-doc-green: #194036;        /* Main header/nav — doc-green-500 */
+  --color-doc-gold: #ffc51d;         /* Gold accent strip — doc-gold-500 */
+
+  /* Section theme tokens */
+  --color-ranginui: #1579b7;         /* Parks & Recreation — ranginui-digital-500 */
+  --color-ranginui-dark: #186696;    /* Hover state — ranginui-digital-700 */
+  --color-paptuanuku: #194036;       /* Nature — doc-green-500 (forest green) */
+  --color-paptuanuku-dark: #132f29;  /* Hover state — doc-green-800 */
+  --color-atawhenua: #8c5e2a;        /* Get Involved — earth/ochre */
+  --color-atawhenua-dark: #6e4a1f;   /* Hover state */
+  --color-weta: #80331a;             /* Our Work — weta-500 */
+  --color-weta-dark: #602514;        /* Hover state — weta-800 */
 
   /* fonts */
   --body-font-family: roboto, roboto-fallback, sans-serif;

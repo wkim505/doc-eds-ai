@@ -1,29 +1,50 @@
-/* ============================================================
- * Hero block
- * Variants: no-image, with-subtitle, with-cta, section-themed
- * Themes: ranginui (blue), paptuanuku (green), atawhenua (earth), weta (dark)
- * ============================================================ */
+/* =============================================================================
+ * Hero block — mirrors DOC NZ DocBanner / doc-banner Vue component
+ *
+ * Live reference: https://www.doc.govt.nz/parks-and-recreation/
+ *
+ * Structure (after JS decoration):
+ *   .hero
+ *     picture                ← full-bleed background image
+ *     .hero-content          ← absolute overlay, anchored bottom-left
+ *       h1                   ← page title (white)
+ *       .hero-intro          ← optional intro paragraphs
+ *       .hero-actions        ← optional CTA buttons
+ *
+ * Variants:
+ *   .hero                    — standard (image + heading)
+ *   .hero[data-theme]        — section colour accent + CTA tint
+ *   .hero.no-image           — solid section-colour background, no image
+ *   .hero.with-intro         — shows intro text (always on when intro authored)
+ *   .hero.with-cta           — shows CTA button (always on when CTA authored)
+ * ============================================================================= */
 
+/* Remove default wrapper padding so hero bleeds to page edge */
 .hero-container .hero-wrapper {
   max-width: unset;
   padding: 0;
 }
 
-/* Base hero layout */
+/* ── Container ─────────────────────────────────────────────────────────────── */
 .hero {
   position: relative;
-  display: flex;
-  align-items: flex-end;
-  min-height: 320px;
+  margin-inline: auto;
+  max-width: 1066px;     /* matches live site: .hero{max-width:1066px} */
   overflow: hidden;
-  color: var(--clr-white, #fff);
+  background-color: var(--color-doc-green, #194036);
+
+  /* Mobile-first min-height (matches live: .hero__image{min-height:180px}) */
+  min-height: 180px;
 }
 
-/* Background picture fills the entire hero */
+/* ── Background image ────────────────────────────────────────────────────────
+ * picture fills the entire hero container; the img inside it covers fully.
+ * Live site uses position:relative on the container + padding-top trick,
+ * but absolute positioning achieves the same result more simply in EDS.
+ * ──────────────────────────────────────────────────────────────────────────── */
 .hero > picture {
   position: absolute;
   inset: 0;
-  z-index: 0;
   display: block;
   line-height: 0;
 }
@@ -31,11 +52,15 @@
 .hero > picture img {
   width: 100%;
   height: 100%;
+  max-height: 600px;       /* matches live: .hero__image{max-height:600px} */
   object-fit: cover;
   object-position: center top;
+  display: block;
 }
 
-/* Dark gradient overlay for legibility */
+/* ── Gradient overlay for text legibility ────────────────────────────────────
+ * Dark vignette at the bottom where the title sits, fades to transparent.
+ * ──────────────────────────────────────────────────────────────────────────── */
 .hero::after {
   content: '';
   position: absolute;
@@ -43,190 +68,271 @@
   z-index: 1;
   background: linear-gradient(
     to top,
-    rgb(0 0 0 / 70%) 0%,
-    rgb(0 0 0 / 30%) 50%,
-    rgb(0 0 0 / 0%) 100%
+    rgb(0 0 0 / 65%) 0%,
+    rgb(0 0 0 / 20%) 40%,
+    rgb(0 0 0 / 0%) 70%
   );
+  pointer-events: none;
 }
 
-/* Content overlay sits above the gradient */
+/* ── Content overlay ─────────────────────────────────────────────────────────
+ * Mirrors live site: .hero__bottom-left { position:absolute; bottom:0; ... }
+ * ──────────────────────────────────────────────────────────────────────────── */
 .hero .hero-content {
-  position: relative;
+  position: absolute;
+  bottom: 0;
+  inset-inline: 0;
   z-index: 2;
-  padding: 40px 24px;
-  max-width: var(--max-content-width, 1200px);
-  margin-inline: auto;
-  width: 100%;
+
+  /* Inner max-width matches: .hero__bottom-left-container{max-width:961px} */
+  max-width: 961px;
+  margin-inline: 16px;   /* matches: margin-left:16px; margin-right:16px */
+  padding-block-end: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
 }
 
-/* Headings */
-.hero .hero-content h1,
-.hero .hero-content h2,
-.hero .hero-content h3 {
-  margin: 0 0 12px;
+/* ── Page heading ────────────────────────────────────────────────────────────
+ * White, large, no margin — matches the doc-page-title component output.
+ * ──────────────────────────────────────────────────────────────────────────── */
+.hero .hero-content h1 {
+  margin: 0;
+  padding: 0;
   font-family: var(--heading-font-family);
-  font-size: var(--heading-font-size-xl);
-  color: var(--clr-white, #fff);
+  font-size: clamp(1.75rem, 4vw, 2.75rem);   /* scales 28px → 44px */
+  font-weight: 700;
   line-height: 1.1;
-  text-shadow: 0 1px 4px rgb(0 0 0 / 40%);
+  color: #fff;
+  text-shadow: 0 1px 6px rgb(0 0 0 / 50%);
 }
 
-/* Body / intro text */
-.hero .hero-body {
-  margin-block-end: 20px;
+/* ── Intro text ──────────────────────────────────────────────────────────────
+ * Shown when a paragraph row is authored below the heading.
+ * ──────────────────────────────────────────────────────────────────────────── */
+.hero .hero-intro {
+  display: none; /* hidden on mobile — shown from 768px */
 }
 
-.hero .hero-body p {
-  margin: 0 0 8px;
-  font-size: var(--body-font-size-m);
+.hero .hero-intro p {
+  margin: 0;
+  font-size: var(--body-font-size-s);
   color: rgb(255 255 255 / 90%);
-  max-width: 640px;
-  text-shadow: 0 1px 3px rgb(0 0 0 / 30%);
+  line-height: 1.5;
+  max-width: 600px;
+  text-shadow: 0 1px 3px rgb(0 0 0 / 40%);
 }
 
-/* CTA actions row */
+/* ── CTA actions ─────────────────────────────────────────────────────────────
+ * Buttons styled to DOC NZ design: solid fill primary, outline secondary.
+ * ──────────────────────────────────────────────────────────────────────────── */
 .hero .hero-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-  margin-block-start: 24px;
+  gap: 10px;
+  margin-block-start: 4px;
 }
 
-.hero .hero-actions .button {
-  display: inline-block;
-  padding: 12px 28px;
-  border-radius: 4px;
+.hero .hero-cta {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 24px;
+  border-radius: 2px;
   font-family: var(--heading-font-family);
-  font-size: var(--body-font-size-s);
+  font-size: var(--body-font-size-xs);
   font-weight: 700;
-  text-decoration: none;
+  line-height: 1.2;
+  letter-spacing: 0.03em;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  text-decoration: none;
   cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
 }
 
-.hero .hero-actions .button.primary {
-  background-color: var(--hero-theme-color, var(--link-color));
-  color: var(--clr-white, #fff);
+/* Primary CTA: filled with the section theme colour (fallback: ranginui) */
+.hero .hero-cta-primary {
+  background-color: var(--hero-accent, var(--color-ranginui, #1579b7));
+  color: #fff;
   border: 2px solid transparent;
 }
 
-.hero .hero-actions .button.primary:hover {
+.hero .hero-cta-primary:hover,
+.hero .hero-cta-primary:focus-visible {
+  background-color: var(--hero-accent-dark, var(--color-ranginui-dark, #186696));
+}
+
+/* Secondary CTA: outline on white */
+.hero .hero-cta-secondary {
   background-color: transparent;
-  color: var(--clr-white, #fff);
-  border-color: var(--clr-white, #fff);
+  color: #fff;
+  border: 2px solid #fff;
 }
 
-.hero .hero-actions .button.secondary {
-  background-color: transparent;
-  color: var(--clr-white, #fff);
-  border: 2px solid var(--clr-white, #fff);
+.hero .hero-cta-secondary:hover,
+.hero .hero-cta-secondary:focus-visible {
+  background-color: #fff;
+  color: var(--text-color, #131313);
 }
 
-.hero .hero-actions .button.secondary:hover {
-  background-color: var(--clr-white, #fff);
-  color: var(--text-color);
-}
-
-/* ============================================================
- * No-image variant
- * ============================================================ */
-.hero.no-image {
-  background-color: var(--hero-theme-color, var(--dark-color));
-  min-height: 200px;
-}
-
-.hero.no-image::after {
-  display: none;
-}
-
-/* ============================================================
- * Section theme variants
- * ============================================================ */
+/* ── Section theme variants ──────────────────────────────────────────────────
+ * data-theme is set from `section-theme` page metadata in hero.js.
+ * Each theme injects --hero-accent tokens used by the CTA and accent bar.
+ *
+ * The ::before pseudo-element renders a 5px section-colour bar along the
+ * bottom edge of the hero (matches the live site's coloured section strip).
+ * ──────────────────────────────────────────────────────────────────────────── */
 .hero[data-theme='ranginui'] {
-  --hero-theme-color: var(--color-ranginui);
+  --hero-accent: var(--color-ranginui, #1579b7);
+  --hero-accent-dark: var(--color-ranginui-dark, #186696);
 }
 
 .hero[data-theme='paptuanuku'] {
-  --hero-theme-color: var(--color-paptuanuku);
+  --hero-accent: var(--color-paptuanuku, #194036);
+  --hero-accent-dark: var(--color-paptuanuku-dark, #132f29);
 }
 
 .hero[data-theme='atawhenua'] {
-  --hero-theme-color: var(--color-atawhenua);
+  --hero-accent: var(--color-atawhenua, #8c5e2a);
+  --hero-accent-dark: var(--color-atawhenua-dark, #6e4a1f);
 }
 
 .hero[data-theme='weta'] {
-  --hero-theme-color: var(--color-weta);
+  --hero-accent: var(--color-weta, #80331a);
+  --hero-accent-dark: var(--color-weta-dark, #602514);
 }
 
-/* Themed accent bar at the bottom of the hero */
+/* Section accent bar — rendered as a ::before on themed heroes */
 .hero[data-theme]::before {
   content: '';
   position: absolute;
   inset-inline: 0;
   bottom: 0;
   z-index: 3;
-  height: 6px;
-  background-color: var(--hero-theme-color);
+  height: 5px;
+  background-color: var(--hero-accent);
 }
 
-/* ============================================================
- * Responsive — tablet (>= 600px)
- * ============================================================ */
-@media (width >= 600px) {
+/* ── No-image variant ────────────────────────────────────────────────────────
+ * When no image is authored, show a solid section-colour background.
+ * The content is no longer position:absolute – it just flows normally.
+ * ──────────────────────────────────────────────────────────────────────────── */
+.hero.no-image {
+  min-height: 180px;
+  background-color: var(--hero-accent, var(--color-doc-green, #194036));
+}
+
+.hero.no-image::after {
+  display: none;
+}
+
+.hero.no-image .hero-content {
+  position: static;
+  margin-inline: 16px;
+  padding-block: 32px 24px;
+}
+
+.hero.no-image .hero-content h1 {
+  color: #fff;
+}
+
+.hero.no-image .hero-intro {
+  display: block;
+}
+
+.hero.no-image .hero-intro p {
+  color: rgb(255 255 255 / 85%);
+}
+
+/* ── Responsive: small (>= 480px) ───────────────────────────────────────────
+ * matches live: .hero__image{min-height:260px} at sm breakpoint
+ * ──────────────────────────────────────────────────────────────────────────── */
+@media (width >= 480px) {
+  .hero {
+    min-height: 260px;
+  }
+}
+
+/* ── Responsive: tablet (>= 768px) ──────────────────────────────────────────
+ * matches live: .hero__image{min-height:420px} at md breakpoint
+ * Also shows intro text and increases heading size.
+ * ──────────────────────────────────────────────────────────────────────────── */
+@media (width >= 768px) {
   .hero {
     min-height: 420px;
   }
 
   .hero .hero-content {
-    padding: 48px 32px;
+    margin-inline: 32px;   /* matches live: margin-left/right:32px at ≥768px */
+    padding-block-end: 24px;
+    gap: 12px;
   }
 
-  .hero .hero-content h1,
-  .hero .hero-content h2,
-  .hero .hero-content h3 {
-    font-size: var(--heading-font-size-xxl);
+  .hero .hero-intro {
+    display: block;
+  }
+
+  .hero .hero-cta {
+    padding: 12px 32px;
+    font-size: var(--body-font-size-s);
+  }
+
+  .hero.no-image .hero-content {
+    margin-inline: 32px;
+    padding-block: 48px 36px;
   }
 }
 
-/* ============================================================
- * Responsive — desktop (>= 900px)
- * ============================================================ */
+/* ── Responsive: desktop (>= 900px) ─────────────────────────────────────────
+ * matches live: .hero__image{min-height:600px} at max breakpoint
+ * ──────────────────────────────────────────────────────────────────────────── */
 @media (width >= 900px) {
   .hero {
-    min-height: 520px;
+    min-height: 600px;
   }
 
   .hero .hero-content {
-    padding: 64px 40px;
+    padding-block-end: 32px;
+    gap: 16px;
   }
 }
 
-/* ============================================================
- * Print styles
- * ============================================================ */
+/* ── Print styles ─────────────────────────────────────────────────────────── */
 @media print {
   .hero {
     min-height: unset;
-    color: var(--text-color);
+    background-color: transparent;
+    overflow: visible;
   }
 
   .hero > picture,
   .hero::after,
-  .hero[data-theme]::before {
+  .hero::before {
     display: none;
   }
 
-  .hero .hero-content h1,
-  .hero .hero-content h2,
-  .hero .hero-content h3 {
-    color: var(--text-color);
+  .hero .hero-content {
+    position: static;
+    margin: 0;
+    padding: 0;
+    max-width: unset;
+  }
+
+  .hero .hero-content h1 {
+    color: var(--text-color, #131313);
+    font-size: var(--heading-font-size-xl, 44px);
     text-shadow: none;
   }
 
-  .hero .hero-body p {
-    color: var(--text-color);
+  .hero .hero-intro {
+    display: block;
+  }
+
+  .hero .hero-intro p {
+    color: var(--text-color, #131313);
     text-shadow: none;
   }
 
