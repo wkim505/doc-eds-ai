@@ -106,7 +106,8 @@ header nav#nav {
 
 header nav#nav > * { min-width: 0; }
 
-/* Links inside the green bar inherit white */
+/* Links inside the green bar inherit white. The desktop media query opts the
+   white mega-dropdown panel into a dark text colour where appropriate. */
 header nav#nav,
 header nav#nav a:any-link {
   color: var(--clr-white, #fff);
@@ -303,7 +304,7 @@ header nav .nav-dropdown a {
   text-decoration: none;
 }
 
-/* Popular links */
+/* Popular links (mobile defaults — desktop overrides below) */
 header nav .nav-popular-links {
   margin-top: 12px;
   padding-top: 12px;
@@ -321,10 +322,25 @@ header nav .nav-popular-label {
 }
 
 /* ---------- Section colour theming ---------- */
-header nav .nav-sections .nav-drop.section-ranginui    { --section-color: var(--color-ranginui); }
-header nav .nav-sections .nav-drop.section-paptuanuku  { --section-color: var(--color-paptuanuku); }
-header nav .nav-sections .nav-drop.section-atawhenua   { --section-color: var(--color-atawhenua); }
-header nav .nav-sections .nav-drop.section-weta        { --section-color: var(--color-weta); }
+header nav .nav-sections .nav-drop.section-ranginui {
+  --section-color: var(--color-ranginui);
+  --section-color-dark: var(--color-ranginui-dark);
+}
+
+header nav .nav-sections .nav-drop.section-paptuanuku {
+  --section-color: var(--color-paptuanuku);
+  --section-color-dark: var(--color-paptuanuku-dark);
+}
+
+header nav .nav-sections .nav-drop.section-atawhenua {
+  --section-color: var(--color-atawhenua);
+  --section-color-dark: var(--color-atawhenua-dark);
+}
+
+header nav .nav-sections .nav-drop.section-weta {
+  --section-color: var(--color-weta);
+  --section-color-dark: var(--color-weta-dark);
+}
 
 /* ---------- Mobile drawer behaviour ---------- */
 @media (width <= 767.98px) {
@@ -441,63 +457,164 @@ header nav .nav-sections .nav-drop.section-weta        { --section-color: var(--
 
   header nav .nav-sections > ul > li.nav-drop > a::after { display: none; }
 
-  header nav .nav-sections > ul > li.nav-drop:hover > a,
+  /* Active / hovered top-level tab keeps the green-bar background — only an
+     upward-pointing chevron under the label hints at the open panel. */
   header nav .nav-sections > ul > li.nav-drop[aria-expanded='true'] > a {
-    background-color: var(--section-color, rgb(255 255 255 / 10%));
-    border-bottom-color: var(--color-doc-gold);
+    background-color: transparent;
+    border-bottom-color: transparent;
+    position: relative;
   }
 
-  /* Mega dropdown (full-width panel) */
+  header nav .nav-sections > ul > li.nav-drop[aria-expanded='true'] > a::before {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid var(--clr-white);
+    z-index: calc(var(--header-z) + 1);
+  }
+
+  /* Subtle hover state for a closed tab. */
+  header nav .nav-sections > ul > li.nav-drop:hover > a {
+    background-color: rgb(255 255 255 / 8%);
+  }
+
+  /* Mega dropdown — full-width white panel that flies out below the green bar. */
   header nav .nav-dropdown {
     display: none;
     position: absolute;
     left: 0;
     right: 0;
     top: 100%;
-    background-color: var(--section-color, var(--color-doc-green));
-    color: var(--clr-white);
-    padding: 32px 0;
-    box-shadow: 0 8px 24px rgb(0 0 0 / 25%);
+    background-color: var(--clr-white);
+    color: var(--text-color);
+    box-shadow: 0 8px 24px rgb(0 0 0 / 18%);
     z-index: var(--header-z);
+  }
+
+  /* Override the green-bar default (white) for links inside the white panel. */
+  header nav#nav .nav-dropdown a:any-link {
+    color: var(--text-color);
+  }
+
+  header nav#nav .nav-sublinks a:any-link {
+    color: var(--clr-white);
   }
 
   header .nav-wrapper { position: sticky; }
 
   header nav .nav-sections > ul > li[aria-expanded='true'] > .nav-dropdown {
     display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 32px;
-    max-width: 1440px;
+    grid-template-columns: minmax(280px, 1fr) minmax(0, 2fr);
+    gap: 48px;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 32px 24px;
+    padding: 32px 24px 40px;
   }
 
+  /* Sub-links: vertical stack of section-coloured rectangle buttons. */
   header nav .nav-sublinks ul {
-    columns: 2;
-    column-gap: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
   }
 
   header nav .nav-sublinks li {
-    break-inside: avoid;
-    padding: 6px 0;
+    padding: 0;
   }
 
   header nav .nav-sublinks a {
-    font-size: 1.125rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    padding: 12px 20px;
+    background-color: var(--section-color, var(--color-doc-green));
+    color: var(--clr-white);
+    font-family: var(--body-font-family);
+    font-size: 1rem;
     font-weight: 500;
+    text-decoration: none;
+    border: 0;
+    box-sizing: border-box;
   }
 
+  header nav .nav-sublinks a::after {
+    content: '';
+    display: inline-block;
+    width: 18px;
+    height: 14px;
+    flex: 0 0 auto;
+    background-color: currentcolor;
+    mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="white" d="M4 11h12.17l-3.58-3.59L14 6l6 6-6 6-1.41-1.41L16.17 13H4z"/></svg>');
+    mask-repeat: no-repeat;
+    mask-position: center;
+  }
+
+  header nav .nav-sublinks a:hover,
+  header nav .nav-sublinks a:focus-visible {
+    background-color: var(--section-color-dark, var(--color-doc-green));
+    color: var(--clr-white);
+    text-decoration: none;
+  }
+
+  /* Popular panel: plain heading + outlined rectangular buttons that wrap. */
   header nav .nav-popular-links {
     margin: 0;
-    padding: 16px;
-    background-color: rgb(0 0 0 / 20%);
+    padding: 0;
+    background-color: transparent;
     border: 0;
-    border-radius: 4px;
+    border-radius: 0;
   }
 
   header nav .nav-popular-label {
-    color: var(--color-doc-gold);
+    margin: 0 0 16px;
+    padding: 0;
+    color: var(--text-color);
+    font-family: var(--heading-font-family);
+    font-size: 1.125rem;
+    font-weight: 600;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  header nav .nav-popular-links ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+  }
+
+  header nav .nav-popular-links li {
+    padding: 0;
+  }
+
+  header nav .nav-popular-links a {
+    display: inline-flex;
+    align-items: center;
+    padding: 12px 18px;
+    background-color: transparent;
+    color: var(--text-color);
+    font-family: var(--body-font-family);
     font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.2;
+    text-decoration: none;
+    border: 1.5px solid var(--text-color);
+  }
+
+  header nav .nav-popular-links a:hover,
+  header nav .nav-popular-links a:focus-visible {
+    background-color: var(--text-color);
+    color: var(--clr-white);
+    text-decoration: none;
   }
 
   /* Tools on desktop: show search, auth, abn cta */
