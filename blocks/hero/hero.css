@@ -1,37 +1,381 @@
+/* Hero block — DOC NZ
+ *
+ * Visual model (matches https://www.doc.govt.nz/):
+ *   - Full-bleed image at top of page
+ *   - White (85% opacity) "title box" overlapping bottom-left of image
+ *   - Slab-serif dark title inside the box
+ *   - Optional intro paragraph + CTA in a white panel below the image
+ *   - Top-right "i" button toggles the photographer credit
+ *
+ * Variants:
+ *   .hero.has-image   Standard variant with full-bleed image
+ *   .hero.no-image    Title box at top of plain content area (no image)
+ *   .hero.theme-*     ranginui | paptuanuku | atawhenua | weta accent colour
+ */
+
+/* Full-bleed: cancel the section's max-width + padding for the hero only */
 .hero-container .hero-wrapper {
   max-width: unset;
   padding: 0;
 }
 
-.hero {
+main .hero {
   position: relative;
-  padding: 40px 24px;
-  min-height: 300px;
+  display: block;
+  width: 100%;
+  margin: 0 0 32px;
+  background-color: var(--background-color);
+  color: var(--text-color);
 }
 
-.hero h1 {
-  max-width: 1200px;
-  margin-left: auto;
-  margin-right: auto;
-  color: var(--background-color);
+/* Image container */
+main .hero .hero-image-container {
+  position: relative;
+  width: 100%;
 }
 
-.hero picture {
+main .hero.has-image .hero-image-container {
+  aspect-ratio: 16 / 9;
+  max-height: 70vh;
+  min-height: 240px;
+}
+
+/* The picture is clipped by its own wrapper so the title box can extend
+ * beyond the image into the white space below. */
+main .hero .hero-picture {
   position: absolute;
-  z-index: -1;
   inset: 0;
-  object-fit: cover;
-  box-sizing: border-box;
+  overflow: hidden;
 }
 
-.hero img {
-  object-fit: cover;
+main .hero picture {
+  display: block;
   width: 100%;
   height: 100%;
+  margin: 0;
+}
+
+main .hero picture img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Title row — uses the SAME centering rules as a global .section
+ * (`main > .section > div` in styles.css) so its inner content
+ * (the title box) lines up exactly with the content column below the
+ * hero, regardless of viewport / scrollbar quirks. */
+main .hero .hero-title-row {
+  max-width: 1200px;
+  margin: auto;
+  padding: 0 24px;
+}
+
+/* When overlaying an image, position the row absolutely against the hero
+ * but keep the same left/right padding so the inner box aligns with the
+ * intro / content paragraphs that follow. */
+main .hero.has-image .hero-title-row {
+  position: absolute;
+  inset: auto 0 0;
+  pointer-events: none;
+}
+
+/* Title box */
+main .hero .hero-title-box {
+  position: relative;
+  z-index: 2;
+  box-sizing: border-box;
+  display: inline-block;
+  max-width: 100%;
+  padding: 12px 20px 14px;
+  background-color: rgb(255 255 255 / 92%);
+  color: var(--text-color);
+}
+
+main .hero.has-image .hero-title-box {
+  background-color: rgb(255 255 255 / 85%);
+  pointer-events: auto;
+}
+
+main .hero .hero-title-box h1 {
+  margin: 0;
+  color: var(--text-color);
+  font-family: georgia, "times new roman", serif;
+  font-weight: 400;
+  font-size: var(--heading-font-size-l);
+  line-height: 1.1;
 }
 
 @media (width >= 900px) {
-  .hero {
-    padding: 40px 32px;
+  main .hero .hero-title-row {
+    padding: 0 32px;
+  }
+
+  main .hero.has-image .hero-title-row {
+    inset: auto 0 0;
+  }
+
+  main .hero .hero-title-box {
+    padding: 14px 28px 18px;
+  }
+
+  main .hero .hero-title-box h1 {
+    font-size: var(--heading-font-size-xl);
+  }
+}
+
+/* Content panel (intro + CTA), shown below the image.
+ * Uses the same horizontal centring rules as the global section wrapper
+ * so paragraphs inside line up exactly with the title box above and the
+ * content column further down the page. */
+main .hero .hero-content {
+  max-width: 1200px;
+  margin: auto;
+  padding: 24px 24px 0;
+  color: var(--text-color);
+}
+
+/* Make room for the overhanging title box */
+main .hero.no-image .hero-content,
+main .hero.has-image .hero-content {
+  padding-top: 16px;
+}
+
+main .hero.has-image .hero-content:empty {
+  padding: 0;
+}
+
+main .hero .hero-content p {
+  margin: 0 0 12px;
+  font-family: georgia, "times new roman", serif;
+  font-size: var(--body-font-size-m);
+  line-height: 1.4;
+  color: var(--text-color);
+}
+
+main .hero .hero-content h2,
+main .hero .hero-content h3,
+main .hero .hero-content h4,
+main .hero .hero-content h5,
+main .hero .hero-content h6 {
+  margin: 0 0 12px;
+  font-family: georgia, "times new roman", serif;
+  font-weight: 400;
+  font-size: var(--body-font-size-m);
+  line-height: 1.4;
+  color: var(--text-color);
+}
+
+@media (width >= 900px) {
+  main .hero .hero-content {
+    padding-inline: 32px;
+  }
+
+  main .hero.has-image .hero-content {
+    padding-top: 16px;
+  }
+}
+
+/* CTA */
+main .hero .hero-cta {
+  margin-top: 8px;
+}
+
+main .hero .hero-cta a {
+  display: inline-block;
+  padding: 8px 18px;
+  border: 1px solid var(--color-doc-green);
+  border-radius: 0;
+  background-color: var(--color-doc-gold);
+  color: var(--text-color);
+  font-family: var(--body-font-family);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+main .hero .hero-cta a:hover,
+main .hero .hero-cta a:focus-visible {
+  background-color: var(--color-doc-green);
+  color: var(--clr-white);
+}
+
+/* Image-credit toggle (top-right) */
+main .hero .hero-top {
+  position: absolute;
+  inset: 8px 8px auto auto;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  pointer-events: none;
+}
+
+main .hero .hero-top > * {
+  pointer-events: auto;
+}
+
+main .hero .hero-caption-toggle {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  margin: 0;
+  padding: 4px;
+  border: 1px solid rgb(56 66 70 / 20%);
+  border-radius: 6px;
+  background-color: rgb(255 255 255 / 85%);
+  color: var(--text-color);
+  cursor: pointer;
+}
+
+main .hero .hero-caption-toggle:hover,
+main .hero .hero-caption-toggle:focus-visible {
+  background-color: rgb(255 255 255 / 100%);
+}
+
+main .hero .hero-caption-toggle:focus-visible {
+  outline: 2px solid var(--color-doc-gold);
+  outline-offset: 2px;
+}
+
+main .hero .hero-caption-icon {
+  width: 18px;
+  height: 18px;
+}
+
+main .hero .hero-caption-body {
+  max-width: min(320px, calc(100vw - 32px));
+  padding: 10px 12px;
+  background-color: rgb(255 255 255 / 92%);
+  color: var(--text-color);
+  font-family: var(--body-font-family);
+  font-size: var(--body-font-size-xs);
+  line-height: 1.4;
+}
+
+main .hero .hero-caption-body p {
+  margin: 0;
+  color: var(--text-color);
+}
+
+main .hero .hero-caption-body a:any-link {
+  color: var(--color-doc-green);
+  text-decoration: underline;
+}
+
+/* No-image variant */
+main .hero.no-image {
+  background-color: var(--background-color);
+}
+
+main .hero.no-image .hero-image-container {
+  display: none;
+}
+
+/* No-image: the title row sits inside the (already-padded) content panel,
+ * so cancel its own max-width / padding to avoid doubling up. */
+main .hero.no-image .hero-content > .hero-title-row {
+  max-width: none;
+  margin: 0 0 12px;
+  padding: 0;
+}
+
+main .hero.no-image .hero-title-box {
+  background-color: rgb(255 255 255 / 100%);
+}
+
+/* Section themes — left-border accent on the title box */
+main .hero.theme-ranginui .hero-title-box {
+  border-left: 6px solid var(--color-ranginui);
+}
+
+main .hero.theme-paptuanuku .hero-title-box {
+  border-left: 6px solid var(--color-paptuanuku);
+}
+
+main .hero.theme-atawhenua .hero-title-box {
+  border-left: 6px solid var(--color-atawhenua);
+}
+
+main .hero.theme-weta .hero-title-box {
+  border-left: 6px solid var(--color-weta);
+}
+
+main .hero.theme-ranginui .hero-cta a {
+  background-color: var(--color-ranginui);
+  border-color: var(--color-ranginui);
+  color: var(--clr-white);
+}
+
+main .hero.theme-paptuanuku .hero-cta a {
+  background-color: var(--color-paptuanuku);
+  border-color: var(--color-paptuanuku);
+  color: var(--clr-white);
+}
+
+main .hero.theme-atawhenua .hero-cta a {
+  background-color: var(--color-atawhenua);
+  border-color: var(--color-atawhenua);
+  color: var(--clr-white);
+}
+
+main .hero.theme-weta .hero-cta a {
+  background-color: var(--color-weta);
+  border-color: var(--color-weta);
+  color: var(--clr-white);
+}
+
+main .hero.theme-ranginui .hero-cta a:hover {
+  background-color: var(--color-ranginui-dark);
+  border-color: var(--color-ranginui-dark);
+}
+
+main .hero.theme-paptuanuku .hero-cta a:hover {
+  background-color: var(--color-paptuanuku-dark);
+  border-color: var(--color-paptuanuku-dark);
+}
+
+main .hero.theme-atawhenua .hero-cta a:hover {
+  background-color: var(--color-atawhenua-dark);
+  border-color: var(--color-atawhenua-dark);
+}
+
+main .hero.theme-weta .hero-cta a:hover {
+  background-color: var(--color-weta-dark);
+  border-color: var(--color-weta-dark);
+}
+
+/* Larger viewports */
+@media (width >= 1200px) {
+  main .hero.has-image .hero-image-container {
+    min-height: 480px;
+  }
+}
+
+/* Print */
+@media print {
+  main .hero .hero-picture,
+  main .hero .hero-top {
+    display: none;
+  }
+
+  main .hero.has-image .hero-image-container {
+    aspect-ratio: auto;
+    min-height: 0;
+    height: auto;
+  }
+
+  main .hero.has-image .hero-title-row {
+    position: static;
+    inset: auto;
+    margin: 0;
+  }
+
+  main .hero.has-image .hero-title-box {
+    background: none;
   }
 }
