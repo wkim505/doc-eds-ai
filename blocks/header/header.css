@@ -441,8 +441,8 @@ header nav .nav-sections .nav-drop.section-weta {
 
   header nav .nav-sections > ul {
     display: flex;
-    align-items: stretch;
-    gap: 8px;
+    align-items: center;
+    gap: 28px;
     padding: 0;
     height: 100%;
   }
@@ -451,46 +451,33 @@ header nav .nav-sections .nav-drop.section-weta {
     position: static;
     border: 0;
     display: flex;
-    align-items: stretch;
+    align-items: center;
   }
 
+  /* Tabs are flush with the label — gap on the <ul> handles spacing so the
+     hover underline only spans the text + chevron width (matching the live
+     DOC site). */
   header nav .nav-sections > ul > li > a {
-    padding: 0 16px;
-    height: 100%;
+    padding: 4px 0;
     align-items: center;
     border-bottom: 4px solid transparent;
     box-sizing: border-box;
   }
 
-  header nav .nav-sections > ul > li.nav-drop > a::after { display: none; }
-
-  /* Hovered top-level tab gets a white 4px underline (matching the live site). */
-  header nav .nav-sections > ul > li.nav-drop > a {
-    position: relative;
+  /* Restyle the chevron from the bigger mobile triangle to a slim ~6px V. */
+  header nav .nav-sections > ul > li.nav-drop > a::after {
+    width: 6px;
+    height: 6px;
+    border-width: 0 1.5px 1.5px 0;
+    margin-left: 6px;
+    margin-bottom: 2px;
   }
 
+  /* Hover / focus / open all paint a 4px white underline below the label. */
   header nav .nav-sections > ul > li.nav-drop:hover > a,
-  header nav .nav-sections > ul > li.nav-drop:focus-within > a {
-    border-bottom-color: var(--clr-white);
-  }
-
-  /* Open tab: white chevron points down into the white panel. The underline is
-     hidden so the chevron sits flush. */
+  header nav .nav-sections > ul > li.nav-drop:focus-within > a,
   header nav .nav-sections > ul > li.nav-drop[aria-expanded='true'] > a {
-    background-color: transparent;
-    border-bottom-color: transparent;
-  }
-
-  header nav .nav-sections > ul > li.nav-drop[aria-expanded='true'] > a::before {
-    content: '';
-    position: absolute;
-    bottom: -1px;
-    left: 50%;
-    transform: translateX(-50%);
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-bottom: 8px solid var(--clr-white);
-    z-index: calc(var(--header-z) + 1);
+    border-bottom-color: var(--clr-white);
   }
 
   /* Mega dropdown — full-width white panel that flies out below the green bar. */
