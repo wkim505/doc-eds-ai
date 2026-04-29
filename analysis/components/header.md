@@ -72,9 +72,16 @@ header (auto block)
 
 ## AI Implementation Instructions
 ### Mandatory Skills
-- `block-collection-and-party` — For header/footer auto-block patterns
-- `building-blocks` — EDS block JS/CSS structure and decoration
-- `content-driven-development` — For authoring model
+- `content-driven-development` - Orchestrates the entire workflow — never skip this
+- `analyze-and-plan` - Defines acceptance criteria before writing code
+- `content-modeling` - Designs the table structure authors work with
+- `building-blocks` - The actual implementation guide
+- `testing-blocks` - Browser validation is explicitly marked MANDATORY
+- `code-review` - End-of-development quality gate
+- `block-collection-and-party` - Any time you want reference implementations to start from — called during building-blocks
+- `find-test-content` - Modifying an existing block — finds live pages already using it
+- `doc-search` - When you hit an unfamiliar EDS feature and web search doesn't surface aem.live docs
+- `block-inventory` - Useful when you need to know what blocks already exist before modeling new ones
 
 ### Validation Loop
 Use Chrome MCP iteratively to verify:
