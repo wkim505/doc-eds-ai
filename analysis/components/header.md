@@ -82,7 +82,7 @@ header (auto block)
 - `find-test-content` - Modifying an existing block — finds live pages already using it
 - `doc-search` - When you hit an unfamiliar EDS feature and web search doesn't surface aem.live docs
 - `block-inventory` - Useful when you need to know what blocks already exist before modeling new ones
-
+- `ue-component-model` - This skill helps you create or edit the three JSON configuration files that control how AEM Edge Delivery Services (EDS) blocks appear and behave in the Universal Editor (UE)
 ### Validation Loop
 Use Chrome MCP iteratively to verify:
 1. Gold bar renders at correct height and color

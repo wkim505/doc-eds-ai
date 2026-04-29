@@ -1,24 +1,10 @@
 import { getMetadata } from '../../scripts/aem.js';
+import { moveInstrumentation } from '../../scripts/scripts.js';
 import { loadFragment } from '../fragment/fragment.js';
 
 const SECTION_COLOURS = ['ranginui', 'paptuanuku', 'atawhenua', 'weta'];
-const COLOUR_PATTERN = /\s*\{(ranginui|paptuanuku|atawhenua|weta)\}\s*$/i;
 
 const isMobile = window.matchMedia('(max-width: 767.98px)');
-
-/**
- * Extract a section colour token (e.g. "{ranginui}") from a link's text.
- * Returns the colour key (or null) and strips the token from the link.
- * @param {HTMLAnchorElement} link
- */
-function extractSectionColour(link) {
-  if (!link) return null;
-  const match = link.textContent.match(COLOUR_PATTERN);
-  if (!match) return null;
-  const colour = match[1].toLowerCase();
-  link.textContent = link.textContent.replace(COLOUR_PATTERN, '').trim();
-  return SECTION_COLOURS.includes(colour) ? colour : null;
-}
 
 /**
  * Close all open mega-menu items.
@@ -49,9 +35,6 @@ function toggleMobileMenu(nav, forceExpanded = null) {
   if (!expanded) closeAllSections(nav.querySelector('.nav-sections'));
 }
 
-/**
- * Create a "Skip to content" link that targets #main-heading.
- */
 function buildSkipLink() {
   const a = document.createElement('a');
   a.className = 'skip-to-content';
@@ -60,9 +43,6 @@ function buildSkipLink() {
   return a;
 }
 
-/**
- * Build the gold accent bar (10px high).
- */
 function buildGoldBar() {
   const div = document.createElement('div');
   div.className = 'header-gold-bar';
@@ -70,9 +50,6 @@ function buildGoldBar() {
   return div;
 }
 
-/**
- * Build the print-only text variant of the header.
- */
 function buildPrintHeader() {
   const div = document.createElement('div');
   div.className = 'header-print';
@@ -85,22 +62,68 @@ function buildPrintHeader() {
 }
 
 /**
- * Decorate a top-level mega-menu list item:
- * - reads the section colour token from its main link
- * - splits child <ul>s into "sub-links" and "popular links"
- *   (any <h4> inside the <li> separates the two)
- * @param {HTMLLIElement} li
+ * Resolve which section colour class is on a `Nav Section` block element.
+ * @param {Element} blockEl
+ * @returns {string|null}
  */
-function decorateNavItem(li) {
-  const mainLink = li.querySelector(':scope > a');
-  if (!mainLink) return;
-  const colour = extractSectionColour(mainLink);
+function findSectionColour(blockEl) {
+  return SECTION_COLOURS.find((c) => blockEl.classList.contains(c)) || null;
+}
+
+/**
+ * Convert a `Nav Section` UE block into a decorated <li> with sub-link list and
+ * an optional Popular panel.
+ *
+ * Each row of the block is one `Nav Item` with two cells:
+ *   cell 0: <a href>linkText</a>  (collapsed link + linkText)
+ *   cell 1: "true" | "false"      (the boolean `popular` field)
+ *
+ * The section heading + section href are read from the heading element that
+ * immediately precedes the block in the source fragment.
+ *
+ * @param {Element} blockEl       the `.nav-section` block element
+ * @param {Element|null} headingEl the heading (e.g. <h3>) preceding the block
+ */
+function buildNavItem(blockEl, headingEl) {
+  const li = document.createElement('li');
+  moveInstrumentation(blockEl, li);
+
+  const colour = findSectionColour(blockEl);
   if (colour) li.classList.add(`section-${colour}`);
 
-  const lists = li.querySelectorAll(':scope > ul');
-  const popularHeading = li.querySelector(':scope > h4, :scope > h3');
+  // Section heading link
+  const headingLink = headingEl?.querySelector('a');
+  const sectionHref = headingLink?.getAttribute('href') || '#';
+  const sectionLabel = (headingLink?.textContent || headingEl?.textContent || '').trim();
 
-  if (lists.length === 0) return;
+  const mainLink = document.createElement('a');
+  mainLink.href = sectionHref;
+  mainLink.textContent = sectionLabel;
+  if (headingLink) moveInstrumentation(headingLink, mainLink);
+  li.append(mainLink);
+
+  // Split rows into sub-links and popular-links by reading the boolean cell.
+  const subLinks = document.createElement('ul');
+  const popularLinks = document.createElement('ul');
+
+  Array.from(blockEl.children).forEach((row) => {
+    const [linkCell, popularCell] = row.children;
+    const a = linkCell?.querySelector('a');
+    if (!a) return;
+    // EDS auto-decorates standalone <a> elements as `<a class="button">`. Strip
+    // the styling classes so the link renders as a plain dropdown entry.
+    a.classList.remove('button');
+    a.closest('.button-container')?.classList.remove('button-container');
+    const isPopular = (popularCell?.textContent || '').trim().toLowerCase() === 'true';
+    const item = document.createElement('li');
+    moveInstrumentation(row, item);
+    item.append(a);
+    (isPopular ? popularLinks : subLinks).append(item);
+  });
+
+  if (subLinks.children.length === 0 && popularLinks.children.length === 0) {
+    return li;
+  }
 
   li.classList.add('nav-drop');
   li.setAttribute('aria-expanded', 'false');
@@ -108,30 +131,27 @@ function decorateNavItem(li) {
   const dropdown = document.createElement('div');
   dropdown.className = 'nav-dropdown';
 
-  const subLinks = document.createElement('div');
-  subLinks.className = 'nav-sublinks';
-  subLinks.append(lists[0]);
-  dropdown.append(subLinks);
+  if (subLinks.children.length > 0) {
+    const subWrap = document.createElement('div');
+    subWrap.className = 'nav-sublinks';
+    subWrap.append(subLinks);
+    dropdown.append(subWrap);
+  }
 
-  if (lists.length > 1) {
-    const popular = document.createElement('div');
-    popular.className = 'nav-popular-links';
+  if (popularLinks.children.length > 0) {
+    const popularWrap = document.createElement('div');
+    popularWrap.className = 'nav-popular-links';
     const label = document.createElement('p');
     label.className = 'nav-popular-label';
-    label.textContent = popularHeading ? popularHeading.textContent : 'Popular';
-    popular.append(label);
-    if (popularHeading) popularHeading.remove();
-    Array.from(lists).slice(1).forEach((ul) => popular.append(ul));
-    dropdown.append(popular);
+    label.textContent = 'Popular';
+    popularWrap.append(label, popularLinks);
+    dropdown.append(popularWrap);
   }
 
   li.append(dropdown);
+  return li;
 }
 
-/**
- * Wire up hover/click toggles for mega-menu on desktop, accordion on mobile.
- * @param {Element} navSections
- */
 function wireNavSectionToggles(navSections) {
   const drops = navSections.querySelectorAll('.nav-drop');
   drops.forEach((drop) => {
@@ -171,27 +191,61 @@ function wireNavSectionToggles(navSections) {
 }
 
 /**
- * Build a tools section element (search/auth/favourites/abn) from anchors found
- * in the third nav fragment column. Anchors are recognised by their CSS classes
- * (e.g. nav-search, nav-auth, nav-favourites, nav-abn).
- * @param {Element} sourceContainer
+ * Build the mega-nav <ul> by walking the sections-source children, pairing
+ * each heading element with the next sibling `.nav-section` block.
+ * @param {Element} sectionsSrc
  */
-function buildTools(sourceContainer) {
+function buildSections(sectionsSrc) {
+  const navSections = document.createElement('div');
+  navSections.className = 'nav-sections';
+  if (!sectionsSrc) return navSections;
+
+  const ul = document.createElement('ul');
+
+  // EDS wraps default content into .default-content-wrapper and each block into
+  // .{block-name}-wrapper. Walk the wrappers in order and pair each heading
+  // (last heading we saw) with the next .nav-section block.
+  let pendingHeading = null;
+
+  const walk = (root) => {
+    Array.from(root.children).forEach((child) => {
+      if (/^H[1-6]$/.test(child.tagName)) {
+        pendingHeading = child;
+        return;
+      }
+      if (child.classList?.contains('nav-section')) {
+        const li = buildNavItem(child, pendingHeading);
+        ul.append(li);
+        pendingHeading = null;
+        return;
+      }
+      // Recurse into wrappers (default-content-wrapper, nav-section-wrapper).
+      if (child.children.length > 0) walk(child);
+    });
+  };
+  walk(sectionsSrc);
+
+  navSections.append(ul);
+  return navSections;
+}
+
+/**
+ * Build the tools row from the tools-source container.
+ * Default-content links (search/auth/favourites) are recognised by their href
+ * pattern, since EDS auto-decoration strips authored CSS classes.
+ * The ABN CTA is read from the `Nav CTA` block.
+ * @param {Element} toolsSrc
+ */
+function buildTools(toolsSrc) {
   const tools = document.createElement('div');
   tools.className = 'nav-tools';
+  if (!toolsSrc) return tools;
 
-  if (!sourceContainer) return tools;
-
-  // EDS auto-decorates <a class="button"> on standalone <p> links, stripping any
-  // author-provided classes. We therefore identify each tool by its href
-  // pattern (and the ABN CTA by its wrapped image).
-  const anchors = Array.from(sourceContainer.querySelectorAll('a'));
+  const anchors = Array.from(toolsSrc.querySelectorAll('a'));
   const matchHref = (re) => anchors.find((a) => re.test(a.getAttribute('href') || ''));
   const search = matchHref(/search/i);
   const auth = matchHref(/online-service-accounts|signin|sign-in|login/i);
   const favourites = matchHref(/favourite|saved-list|wishlist/i);
-  const abn = anchors.find((a) => a.querySelector('img'))
-    || matchHref(/always-be-naturing/i);
 
   // Strip the auto-applied "button" class so our header tools render plain.
   [search, auth, favourites].forEach((a) => {
@@ -304,14 +358,33 @@ function buildTools(sourceContainer) {
   }
   tools.append(authWrap);
 
-  // ABN ("Always Be Naturing") CTA badge
-  if (abn) {
-    abn.classList.add('nav-abn-cta');
-    if (!abn.getAttribute('aria-label')) abn.setAttribute('aria-label', 'Always Be Naturing');
-    tools.append(abn);
-  }
-
   return tools;
+}
+
+/**
+ * Build the ABN CTA from a `Nav CTA` block. The block's two rows are:
+ *   row 0: <div><a href>label</a></div>
+ *   row 1: <div><picture>...</picture></div>
+ * @param {Element|null} ctaBlock
+ */
+function buildAbnCta(ctaBlock) {
+  if (!ctaBlock) return null;
+  const link = ctaBlock.querySelector('a');
+  const picture = ctaBlock.querySelector('picture');
+  if (!link) return null;
+  const a = document.createElement('a');
+  a.href = link.getAttribute('href') || '#';
+  a.className = 'nav-abn-cta';
+  if (!a.getAttribute('aria-label')) {
+    a.setAttribute('aria-label', link.textContent.trim() || 'Always Be Naturing');
+  }
+  moveInstrumentation(ctaBlock, a);
+  if (picture) {
+    a.append(picture);
+  } else {
+    a.textContent = link.textContent.trim() || 'Always Be Naturing';
+  }
+  return a;
 }
 
 /**
@@ -340,8 +413,8 @@ export default async function decorate(block) {
 
   // The nav fragment provides three top-level sections, in order:
   //   0: brand (logo)
-  //   1: sections (mega-nav)
-  //   2: tools (search / auth / abn / favourites)
+  //   1: sections (mega-nav)  — heading + .nav-section block, repeated
+  //   2: tools (search / auth / favourites + Nav CTA block)
   const fragmentSections = fragment.querySelectorAll(':scope > div');
   const [brandSrc, sectionsSrc, toolsSrc] = fragmentSections;
 
@@ -359,33 +432,23 @@ export default async function decorate(block) {
 
   // Hamburger (mobile)
   const hamburger = document.createElement('div');
-  hamburger.className = 'nav-hamburger';
+  hamburger.classList.add('nav-hamburger');
   hamburger.innerHTML = `<button type="button" aria-controls="nav" aria-label="Open navigation" aria-expanded="false">
     <span class="nav-hamburger-icon"></span>
   </button>`;
   hamburger.querySelector('button').addEventListener('click', () => toggleMobileMenu(nav));
 
   // Sections (mega-nav)
-  const navSections = document.createElement('div');
-  navSections.className = 'nav-sections';
-  if (sectionsSrc) {
-    const topUl = sectionsSrc.querySelector(':scope > ul')
-      || sectionsSrc.querySelector('ul');
-    if (topUl) {
-      navSections.append(topUl);
-      topUl.querySelectorAll(':scope > li').forEach(decorateNavItem);
-    }
-  }
+  const navSections = buildSections(sectionsSrc);
   wireNavSectionToggles(navSections);
 
-  // Tools
+  // Tools + ABN CTA
   const navTools = buildTools(toolsSrc);
+  const abnBlock = toolsSrc?.querySelector('.nav-cta');
+  const abnCta = buildAbnCta(abnBlock);
 
-  // Split off the ABN CTA into a dedicated top-bar slot so it remains
-  // visible on mobile (when the rest of the tools collapse into the drawer).
   const navAbnSlot = document.createElement('div');
   navAbnSlot.className = 'nav-abn-slot';
-  const abnCta = navTools.querySelector('.nav-abn-cta');
   if (abnCta) navAbnSlot.append(abnCta);
 
   nav.append(hamburger, navBrand, navAbnSlot, navSections, navTools);
@@ -395,7 +458,6 @@ export default async function decorate(block) {
   navWrapper.append(nav);
   block.append(navWrapper);
 
-  // Sync mobile/desktop state on resize.
   isMobile.addEventListener('change', () => {
     nav.setAttribute('aria-expanded', 'false');
     document.body.style.overflowY = '';
