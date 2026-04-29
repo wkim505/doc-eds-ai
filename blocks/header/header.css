@@ -113,8 +113,14 @@ header nav#nav a:any-link {
   color: var(--clr-white, #fff);
 }
 
-header nav#nav a:hover {
-  text-decoration: underline;
+/* Per the live DOC site, generic links inside the header don't change on
+   hover — interactive cues are scoped to specific elements (sub-links,
+   popular tiles, top-level tabs, etc.) below.
+   We retain a clear keyboard focus ring for accessibility. */
+header nav#nav a:focus-visible,
+header nav#nav button:focus-visible {
+  outline: 2px solid var(--color-doc-gold);
+  outline-offset: 2px;
 }
 
 /* ---------- Hamburger (mobile) ---------- */
@@ -371,6 +377,7 @@ header nav .nav-sections .nav-drop.section-weta {
     display: flex;
     align-items: center;
     flex: 1;
+    margin: 0;
     background: rgb(255 255 255 / 12%);
     border: 1px solid rgb(255 255 255 / 30%);
     border-radius: 24px;
@@ -457,12 +464,21 @@ header nav .nav-sections .nav-drop.section-weta {
 
   header nav .nav-sections > ul > li.nav-drop > a::after { display: none; }
 
-  /* Active / hovered top-level tab keeps the green-bar background — only an
-     upward-pointing chevron under the label hints at the open panel. */
+  /* Hovered top-level tab gets a white 4px underline (matching the live site). */
+  header nav .nav-sections > ul > li.nav-drop > a {
+    position: relative;
+  }
+
+  header nav .nav-sections > ul > li.nav-drop:hover > a,
+  header nav .nav-sections > ul > li.nav-drop:focus-within > a {
+    border-bottom-color: var(--clr-white);
+  }
+
+  /* Open tab: white chevron points down into the white panel. The underline is
+     hidden so the chevron sits flush. */
   header nav .nav-sections > ul > li.nav-drop[aria-expanded='true'] > a {
     background-color: transparent;
     border-bottom-color: transparent;
-    position: relative;
   }
 
   header nav .nav-sections > ul > li.nav-drop[aria-expanded='true'] > a::before {
@@ -475,11 +491,6 @@ header nav .nav-sections .nav-drop.section-weta {
     border-right: 8px solid transparent;
     border-bottom: 8px solid var(--clr-white);
     z-index: calc(var(--header-z) + 1);
-  }
-
-  /* Subtle hover state for a closed tab. */
-  header nav .nav-sections > ul > li.nav-drop:hover > a {
-    background-color: rgb(255 255 255 / 8%);
   }
 
   /* Mega dropdown — full-width white panel that flies out below the green bar. */
@@ -612,21 +623,26 @@ header nav .nav-sections .nav-drop.section-weta {
 
   header nav .nav-popular-links a:hover,
   header nav .nav-popular-links a:focus-visible {
-    background-color: var(--text-color);
-    color: var(--clr-white);
+    background-color: #e6e7e8;
+    color: var(--text-color);
+    border-color: var(--text-color);
     text-decoration: none;
   }
 
   /* Tools on desktop: show search, auth, abn cta */
   header nav .nav-tools .nav-search-wrap {
     position: relative;
-    display: block;
+    display: flex;
+    align-items: center;
     min-width: 200px;
   }
+
+  header nav .nav-tools .nav-search-wrap > form { width: 100%; }
 
   header nav .nav-tools .nav-search-form {
     display: flex;
     align-items: center;
+    margin: 0;
     background: rgb(255 255 255 / 12%);
     border: 1px solid rgb(255 255 255 / 30%);
     border-radius: 24px;
@@ -711,12 +727,11 @@ header nav .nav-sections .nav-drop.section-weta {
     font-size: 0.875rem;
   }
 
+  /* Auth link is permanently underlined to read as a link on the green bar
+     (matches doc.govt.nz). No hover state. */
   header nav .nav-tools .nav-auth-link {
-    text-decoration: none;
-  }
-
-  header nav .nav-tools .nav-auth-link:hover {
     text-decoration: underline;
+    text-underline-offset: 2px;
   }
 
   header nav .nav-tools .nav-abn-cta {
