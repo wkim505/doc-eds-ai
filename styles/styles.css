@@ -25,15 +25,15 @@
   --color-doc-green: #194036;        /* Main header/nav — doc-green-500 */
   --color-doc-gold: #ffc51d;         /* Gold accent strip — doc-gold-500 */
 
-  /* Section theme tokens */
-  --color-ranginui: #1579b7;         /* Parks & Recreation — ranginui-digital-500 */
-  --color-ranginui-dark: #186696;    /* Hover state — ranginui-digital-700 */
-  --color-paptuanuku: #194036;       /* Nature — doc-green-500 (forest green) */
-  --color-paptuanuku-dark: #132f29;  /* Hover state — doc-green-800 */
-  --color-atawhenua: #8c5e2a;        /* Get Involved — earth/ochre */
-  --color-atawhenua-dark: #6e4a1f;   /* Hover state */
-  --color-weta: #80331a;             /* Our Work — weta-500 */
-  --color-weta-dark: #602514;        /* Hover state — weta-800 */
+  /* Section theme tokens (verified against www.doc.govt.nz) */
+  --color-ranginui: #1579b7;         /* Parks & Recreation — sky blue */
+  --color-ranginui-dark: #186696;    /* Hover state */
+  --color-paptuanuku: #507f39;       /* Nature — leaf green */
+  --color-paptuanuku-dark: #3f632d;  /* Hover state */
+  --color-atawhenua: #4c3657;        /* Get Involved — deep plum */
+  --color-atawhenua-dark: #3a2843;   /* Hover state */
+  --color-weta: #80331a;             /* Our Work — terracotta */
+  --color-weta-dark: #602514;        /* Hover state */
 
   /* fonts */
   --body-font-family: roboto, roboto-fallback, sans-serif;

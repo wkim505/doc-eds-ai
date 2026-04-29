@@ -1,0 +1,11 @@
+/*
+ * Nav Section block
+ *
+ * Decoration is owned by the header block. When the Nav Section block appears
+ * outside a header context (e.g. previewed standalone in Universal Editor),
+ * we hide it — it has no meaningful visual presentation on its own.
+ */
+
+main .nav-section.block {
+  display: none;
+}
