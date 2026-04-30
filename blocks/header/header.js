@@ -4,6 +4,19 @@ import { loadFragment } from '../fragment/fragment.js';
 
 const SECTION_COLOURS = ['ranginui', 'paptuanuku', 'atawhenua', 'weta'];
 
+// Brand constants — not authored in UE (no linked-image field in the image
+// component). Update these if the logo asset or home URL ever changes.
+const BRAND_HREF = '/';
+const BRAND_LOGO_SRC = '/icons/doc-logo-white.svg';
+const BRAND_LOGO_ALT = 'Department of Conservation | Te Papa Atawhai';
+const BRAND_LOGO_WIDTH = 160;
+const BRAND_LOGO_HEIGHT = 44;
+
+// Tool URL constants — also not authored in UE.
+const SEARCH_ACTION = '/search-results/';
+const AUTH_HREF = '/footer-links/online-service-accounts/';
+const FAVOURITES_HREF = '/parks-and-recreation/my-saved-list/';
+
 const isMobile = window.matchMedia('(max-width: 767.98px)');
 
 /**
@@ -230,29 +243,13 @@ function buildSections(sectionsSrc) {
 }
 
 /**
- * Build the tools row from the tools-source container.
- * Default-content links (search/auth/favourites) are recognised by their href
- * pattern, since EDS auto-decoration strips authored CSS classes.
- * The ABN CTA is read from the `Nav CTA` block.
- * @param {Element} toolsSrc
+ * Build the tools row (search form + auth link).
+ * URLs are taken from the module-level constants — they are not authored in
+ * the nav fragment because the UE image block has no link field.
  */
-function buildTools(toolsSrc) {
+function buildTools() {
   const tools = document.createElement('div');
   tools.className = 'nav-tools';
-  if (!toolsSrc) return tools;
-
-  const anchors = Array.from(toolsSrc.querySelectorAll('a'));
-  const matchHref = (re) => anchors.find((a) => re.test(a.getAttribute('href') || ''));
-  const search = matchHref(/search/i);
-  const auth = matchHref(/online-service-accounts|signin|sign-in|login/i);
-  const favourites = matchHref(/favourite|saved-list|wishlist/i);
-
-  // Strip the auto-applied "button" class so our header tools render plain.
-  [search, auth, favourites].forEach((a) => {
-    if (!a) return;
-    a.classList.remove('button');
-    a.closest('.button-container')?.classList.remove('button-container');
-  });
 
   // Site search (compact form, autocomplete stub)
   const searchWrap = document.createElement('div');
@@ -260,7 +257,7 @@ function buildTools(toolsSrc) {
   const form = document.createElement('form');
   form.className = 'nav-search-form';
   form.setAttribute('role', 'search');
-  form.action = search ? search.getAttribute('href') : '/search-results/';
+  form.action = SEARCH_ACTION;
   form.method = 'get';
   const label = document.createElement('label');
   label.className = 'sr-only';
@@ -337,23 +334,24 @@ function buildTools(toolsSrc) {
   const isSignedIn = (() => {
     try { return localStorage.getItem('doc-auth') === 'signed-in'; } catch { return false; }
   })();
+  const returnUrl = encodeURIComponent(window.location.pathname);
 
-  if (isSignedIn && favourites) {
-    const fav = favourites.cloneNode(true);
-    fav.classList.add('nav-auth-link');
+  if (isSignedIn) {
+    const fav = document.createElement('a');
+    fav.className = 'nav-auth-link';
+    fav.href = FAVOURITES_HREF;
+    fav.textContent = 'My favourites';
     authWrap.append(fav);
     const signOut = document.createElement('a');
     signOut.className = 'nav-auth-link nav-signout';
-    signOut.href = `/account/signout?returnUrl=${encodeURIComponent(window.location.pathname)}`;
+    signOut.href = `/account/signout?returnUrl=${returnUrl}`;
     signOut.textContent = 'Sign out';
     authWrap.append(signOut);
-  } else if (auth) {
-    const login = auth.cloneNode(true);
-    login.classList.add('nav-auth-link');
-    const baseHref = login.getAttribute('href') || '/footer-links/online-service-accounts/';
-    const sep = baseHref.includes('?') ? '&' : '?';
-    login.setAttribute('href', `${baseHref}${sep}returnUrl=${encodeURIComponent(window.location.pathname)}`);
-    if (!login.textContent.trim()) login.textContent = 'Sign in';
+  } else {
+    const login = document.createElement('a');
+    login.className = 'nav-auth-link';
+    login.href = `${AUTH_HREF}?returnUrl=${returnUrl}`;
+    login.textContent = 'Sign in';
     authWrap.append(login);
   }
   tools.append(authWrap);
@@ -411,24 +409,27 @@ export default async function decorate(block) {
     return;
   }
 
-  // The nav fragment provides three top-level sections, in order:
-  //   0: brand (logo)
-  //   1: sections (mega-nav)  — heading + .nav-section block, repeated
-  //   2: tools (search / auth / favourites + Nav CTA block)
-  const fragmentSections = fragment.querySelectorAll(':scope > div');
-  const [brandSrc, sectionsSrc, toolsSrc] = fragmentSections;
+  // The nav fragment now has a SINGLE top-level section containing:
+  //   • H3 + nav-section block pairs (mega-nav)
+  //   • An optional nav-cta block (ABN CTA)
+  // Brand and tool URLs are hardcoded as module-level constants so that
+  // authors only need to manage nav structure in the single DA section.
+  const [sectionsSrc] = fragment.querySelectorAll(':scope > div');
 
-  // Brand
+  // Brand (logo hardcoded — UE image block has no link field)
   const navBrand = document.createElement('div');
   navBrand.className = 'nav-brand';
-  if (brandSrc) {
-    const link = brandSrc.querySelector('a');
-    if (link) {
-      navBrand.append(link);
-    } else {
-      while (brandSrc.firstChild) navBrand.append(brandSrc.firstChild);
-    }
-  }
+  const brandLink = document.createElement('a');
+  brandLink.href = BRAND_HREF;
+  brandLink.setAttribute('aria-label', BRAND_LOGO_ALT);
+  const brandImg = document.createElement('img');
+  brandImg.src = BRAND_LOGO_SRC;
+  brandImg.alt = BRAND_LOGO_ALT;
+  brandImg.width = BRAND_LOGO_WIDTH;
+  brandImg.height = BRAND_LOGO_HEIGHT;
+  brandImg.loading = 'eager';
+  brandLink.append(brandImg);
+  navBrand.append(brandLink);
 
   // Hamburger (mobile)
   const hamburger = document.createElement('div');
@@ -442,9 +443,11 @@ export default async function decorate(block) {
   const navSections = buildSections(sectionsSrc);
   wireNavSectionToggles(navSections);
 
-  // Tools + ABN CTA
-  const navTools = buildTools(toolsSrc);
-  const abnBlock = toolsSrc?.querySelector('.nav-cta');
+  // Tools (search form + auth — URLs are hardcoded constants)
+  const navTools = buildTools();
+
+  // ABN CTA (optional nav-cta block inside the single nav section)
+  const abnBlock = sectionsSrc?.querySelector('.nav-cta');
   const abnCta = buildAbnCta(abnBlock);
 
   const navAbnSlot = document.createElement('div');
