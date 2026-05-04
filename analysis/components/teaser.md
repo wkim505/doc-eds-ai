@@ -1,41 +1,9 @@
 # teaser — Development-Ready Spec (test harness)
 
-> **Test artifact:** This spec intentionally reuses the `header.md` path for pipeline and authoring checks. Component under test: **`teaser`** (promo / editorial teaser block). Structure mirrors `header2.md` (header component analyst output).
-> Source: synthetic / design intent  ·  Component: `teaser`  ·  Generated: 2026-05-04
-
-## 1. Summary
-
-- The **teaser** block is a bounded content region for promoting a destination page: optional eyebrow, required headline, supporting body copy, optional media, and a primary call-to-action (text + URL).
-- Layout is a single-column stack at all viewports for this test scope; no carousel, no tabs, no video autoplay.
-- Authors configure all strings and links in the block table; the block must not hard-code production URLs.
-- Audience: content authors (primary), visitors scanning hub pages (read headline and CTA), keyboard and screen-reader users (semantic headings and link affordance).
-
-## 2. State diagram
-
-| From state | Trigger | To state | Notes |
-| --- | --- | --- | --- |
-| `default` | Page load | `default` | Block is static; no client-side state machine beyond optional hover on CTA. |
-| `default` | Hover / focus on primary CTA | `cta-active` | Visual focus ring and hover styles only; no overlay. |
-| `cta-active` | Blur / pointer leave | `default` | Revert to resting styles. |
-
-## 3. Content sequences (within the `.teaser` region)
-
-1. **Optional eyebrow** — short uppercase or muted label above the headline; may be empty.
-2. **Headline** — single `<h2>`–`<h4>` level per project heading policy (default `<h3>`) wrapping authored title text.
-3. **Body copy** — one or more paragraphs of rich text or plain text per project convention.
-4. **Optional media** — image (lazy-loaded) or decorative omission; alt text required when image present.
-5. **Primary CTA** — text link or button-styled anchor with external or internal `href`; opens in same tab unless `target` / authoring option specifies otherwise (out of scope for minimal test).
-
-## 4. Shared atoms
-
-- **Eyebrow text style** — smaller than headline; neutral colour token from theme (e.g. `--color-text-muted`).
-- **CTA affordance** — must meet WCAG contrast against background; focus-visible outline required.
-- **Heading level** — exactly one heading element per block instance for this test story.
-
 ## 5. User stories
 
 ### Story T1: Render an authored teaser with headline, body, and primary CTA
-## Epic: DOCEDS-TEST — Sandbox & Component Verification
+### Epic: DOCEDS-TEST — Sandbox & Component Verification
 
 **Persona:** Visitor  
 **Goal:** As a Visitor, I want to scan a concise headline and a clear “next step” link on hub pages so that I can decide whether to open the promoted content.  
@@ -105,9 +73,3 @@ Synthetic test scenario (no live URL). The block must map first-row / column sem
 
 - Exact heading level (`h2` vs `h3`) is project-specific—confirm with `scripts.js` decoration and page outline.
 - Whether eyebrow should be a `<p>` vs `<span>` for semantics—align with design system.
-
----
-
-### Story T2 (optional follow-up, out of scope for minimal test): Teaser on dark section variant
-
-Deferred: background variant tokens and inverted text colours can be added once T1 passes in CI and manual smoke.
