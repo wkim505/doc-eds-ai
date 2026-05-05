@@ -7,7 +7,7 @@ Your project's description...
 
 ## Documentation
 
-Before using the aem-block-collection, we recommand you to go through the documentation on https://www.aem.live/docs/ and more specifically:
+Before using the aem-block-collection, we recommend you to go through the documentation on https://www.aem.live/docs/ and more specifically:
 1. [Developer Tutorial](https://www.aem.live/developer/ue-tutorial)
 1. [Creating Blocks](https://www.aem.live/developer/universal-editor-blocks) and [Content Modelling](https://www.aem.live/developer/component-model-definitions)
 1. [The Anatomy of a Project](https://www.aem.live/developer/anatomy-of-a-project)
