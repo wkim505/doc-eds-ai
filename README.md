@@ -1,6 +1,8 @@
 # Your Project's Title...
 Your project's description...
 
+For contribution guidelines, see [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ## Environments
 - Preview: https://main--{repo}--{owner}.aem.page/
 - Live: https://main--{repo}--{owner}.aem.live/
