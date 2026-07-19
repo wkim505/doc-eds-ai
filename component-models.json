@@ -568,58 +568,8 @@
     ]
   },
   {
-    "id": "nav-section",
+    "id": "teaser",
     "fields": [
-      {
-        "component": "select",
-        "valueType": "string",
-        "name": "classes",
-        "label": "Section Colour",
-        "value": "ranginui",
-        "description": "DOC section theme colour. Determines the dropdown panel and active-tab accent.",
-        "options": [
-          { "name": "Ranginui (blue) — Parks & Recreation", "value": "ranginui" },
-          { "name": "Paptuanuku (green) — Nature", "value": "paptuanuku" },
-          { "name": "Atawhenua (ochre) — Get Involved", "value": "atawhenua" },
-          { "name": "Weta (red-brown) — Our Work", "value": "weta" }
-        ]
-      }
-    ]
-  },
-  {
-    "id": "nav-item",
-    "fields": [
-      {
-        "component": "aem-content",
-        "valueType": "string",
-        "name": "link",
-        "label": "Link"
-      },
-      {
-        "component": "text",
-        "valueType": "string",
-        "name": "linkText",
-        "label": "Label"
-      },
-      {
-        "component": "boolean",
-        "valueType": "boolean",
-        "name": "popular",
-        "label": "Show in Popular panel",
-        "description": "When checked, this link is rendered in the dropdown's Popular column instead of the main sub-link list.",
-        "value": false
-      }
-    ]
-  },
-  {
-    "id": "nav-cta",
-    "fields": [
-      {
-        "component": "aem-content",
-        "valueType": "string",
-        "name": "link",
-        "label": "Link"
-      },
       {
         "component": "reference",
         "valueType": "string",
@@ -631,7 +581,33 @@
         "component": "text",
         "valueType": "string",
         "name": "imageAlt",
-        "label": "Alt Text",
+        "label": "Alt",
+        "value": ""
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "title",
+        "label": "Title",
+        "value": ""
+      },
+      {
+        "component": "richtext",
+        "name": "body",
+        "value": "",
+        "label": "Body",
+        "valueType": "string"
+      },
+      {
+        "component": "aem-content",
+        "name": "link",
+        "label": "Link"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "linkText",
+        "label": "Link Text",
         "value": ""
       }
     ]

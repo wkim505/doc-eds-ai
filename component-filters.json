@@ -18,8 +18,6 @@
       "form",
       "hero",
       "image",
-      "nav-cta",
-      "nav-section",
       "quote",
       "search",
       "tabs",
@@ -27,12 +25,6 @@
       "text",
       "title",
       "video"
-    ]
-  },
-  {
-    "id": "nav-section",
-    "components": [
-      "nav-item"
     ]
   },
   {

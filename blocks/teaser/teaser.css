@@ -1,0 +1,83 @@
+/* Teaser block — DOC NZ
+ *
+ * A stacked promotional card: optional image on top, then a title, a short
+ * body, and an optional call-to-action link. Neutral and theme-agnostic; uses
+ * the shared DOC design tokens so it matches the hero/cards blocks.
+ */
+
+main .teaser {
+  display: flex;
+  flex-direction: column;
+  max-width: 420px;
+  border: 1px solid #dadada;
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+main .teaser .teaser-image {
+  line-height: 0;
+}
+
+main .teaser .teaser-image img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  display: block;
+}
+
+main .teaser .teaser-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+}
+
+main .teaser .teaser-title {
+  margin: 0;
+  font-family: var(--heading-font-family);
+  font-weight: 600;
+  font-size: var(--heading-font-size-s);
+  line-height: 1.2;
+  color: var(--text-color);
+}
+
+main .teaser .teaser-text {
+  font-size: var(--body-font-size-s);
+  line-height: 1.5;
+  color: var(--text-color);
+}
+
+main .teaser .teaser-text p {
+  margin: 0 0 8px;
+}
+
+main .teaser .teaser-text p:last-child {
+  margin-bottom: 0;
+}
+
+main .teaser .teaser-cta {
+  margin: 8px 0 0;
+}
+
+main .teaser .teaser-cta a {
+  display: inline-block;
+  padding: 8px 18px;
+  border: 1px solid var(--color-doc-green);
+  background-color: var(--color-doc-gold);
+  color: var(--text-color);
+  font-family: var(--body-font-family);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+main .teaser .teaser-cta a:hover {
+  background-color: var(--color-doc-green);
+  color: var(--clr-white);
+}
+
+main .teaser .teaser-cta a:focus-visible {
+  background-color: var(--color-doc-green);
+  color: var(--clr-white);
+  outline: 2px solid var(--color-doc-gold);
+  outline-offset: 2px;
+}
