@@ -37,26 +37,26 @@
         {
           "component": "text",
           "valueType": "string",
-          "name": "title",
+          "name": "textContent_title",
           "label": "Title",
           "value": ""
         },
         {
           "component": "richtext",
-          "name": "body",
+          "name": "textContent_body",
           "value": "",
           "label": "Body",
           "valueType": "string"
         },
         {
           "component": "aem-content",
-          "name": "link",
+          "name": "textContent_link",
           "label": "Link"
         },
         {
           "component": "text",
           "valueType": "string",
-          "name": "linkText",
+          "name": "textContent_linkText",
           "label": "Link Text",
           "value": ""
         }
