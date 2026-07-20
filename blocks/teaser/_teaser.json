@@ -80,7 +80,7 @@
         },
         {
           "component": "select",
-          "name": "textContent_classes",
+          "name": "classes_textContent",
           "value": "",
           "label": "Teaser body styles",
           "description": "",
