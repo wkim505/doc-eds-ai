@@ -649,6 +649,69 @@
     ]
   },
   {
+    "id": "teaser2",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "heading_eyebrow",
+        "label": "Eyebrow",
+        "description": "Optional short label shown above the headline. Leave empty to skip.",
+        "value": ""
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "heading_title",
+        "label": "Title",
+        "description": "Headline. Rendered as a single heading.",
+        "required": true,
+        "value": ""
+      },
+      {
+        "component": "richtext",
+        "valueType": "string",
+        "name": "body",
+        "label": "Body",
+        "description": "Primary copy.",
+        "required": true,
+        "value": ""
+      },
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "image_asset",
+        "label": "Image",
+        "description": "Optional teaser image. Requires Alt when set.",
+        "multi": false
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "image_alt",
+        "label": "Alt",
+        "description": "Alternative text for the image (required when an image is set).",
+        "value": ""
+      },
+      {
+        "component": "aem-content",
+        "name": "cta_link",
+        "label": "CTA Link",
+        "description": "Destination for the call-to-action.",
+        "required": true
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "cta_text",
+        "label": "CTA Label",
+        "description": "Visible call-to-action text.",
+        "required": true,
+        "value": ""
+      }
+    ]
+  },
+  {
     "id": "video",
     "fields": [
       {
