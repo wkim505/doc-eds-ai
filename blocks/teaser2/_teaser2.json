@@ -72,7 +72,7 @@
         {
           "component": "text",
           "valueType": "string",
-          "name": "cta_text",
+          "name": "cta_linkText",
           "label": "CTA Label",
           "description": "Visible call-to-action text.",
           "required": true,
