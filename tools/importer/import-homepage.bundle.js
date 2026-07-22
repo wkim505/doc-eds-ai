@@ -52,6 +52,15 @@ var CustomImportScript = (() => {
       return;
     }
     const cells = [];
+    const titleEl = element.querySelector(".widget__title h2, .widget__title h3");
+    const titleText = titleEl ? (titleEl.textContent || "").trim() : "";
+    if (titleText) {
+      const titleCell = document.createDocumentFragment();
+      const h2 = document.createElement("h2");
+      h2.textContent = titleText;
+      titleCell.appendChild(h2);
+      cells.push([titleCell]);
+    }
     cardEls.forEach((card) => {
       const img = card.querySelector("img");
       const imageCell = document.createDocumentFragment();

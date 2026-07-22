@@ -4,6 +4,22 @@
  * global `main .section.columns` grid rule in styles.css. Within each widget,
  * the cards themselves stack (mobile) / go 2-up (desktop) via the ul grid below. */
 
+/* Widget section title bar (e.g. "Featured", "Media releases") — full-width
+ * maui-600 bar above the card grid, matching the source widget header. */
+.cards-doc .cards-doc-title-bar {
+  padding: 8px 16px;
+  background-color: var(--dark-color); /* maui-600 #384246 */
+}
+
+.cards-doc .cards-doc-title {
+  margin: 0;
+  font-family: var(--heading-font-family); /* Zilla Slab */
+  font-size: var(--heading-font-size-xl); /* 32px desktop / 28px mobile */
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--clr-white);
+}
+
 .cards-doc > ul {
   list-style: none;
   margin: 0;

@@ -34,6 +34,19 @@ export default function parse(element, { document }) {
 
   const cells = [];
 
+  // Optional widget section title (e.g. "Featured", "Media releases").
+  // Emitted as a leading single-cell row; the block decorator renders it as a
+  // title bar above the card grid and does not treat it as a card.
+  const titleEl = element.querySelector('.widget__title h2, .widget__title h3');
+  const titleText = titleEl ? (titleEl.textContent || '').trim() : '';
+  if (titleText) {
+    const titleCell = document.createDocumentFragment();
+    const h2 = document.createElement('h2');
+    h2.textContent = titleText;
+    titleCell.appendChild(h2);
+    cells.push([titleCell]);
+  }
+
   cardEls.forEach((card) => {
     // --- Cell 1: image (field:image); imageAlt collapses into <img alt>. ---
     const img = card.querySelector('img');
