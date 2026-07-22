@@ -1,0 +1,14 @@
+{
+  "type": "xwalk",
+  "sites": {
+    "doc-eds-ai": {
+      "previewOrg": "wkim505",
+      "previewSite": "doc-eds-ai",
+      "aemSitePath": "/content/doc-eds-ai",
+      "aemAssetsFolderPath": "/content/dam/doc-eds-ai",
+      "aemSiteName": "doc-eds-ai",
+      "aemSiteTitle": "doc-eds-ai",
+      "libraryUrl": "https://main--sta-xwalk-boilerplate--aemysites.aem.page/tools/sidekick/library.json"
+    }
+  }
+}

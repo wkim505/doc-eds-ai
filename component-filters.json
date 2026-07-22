@@ -36,6 +36,12 @@
     ]
   },
   {
+    "id": "cards-doc",
+    "components": [
+      "card"
+    ]
+  },
+  {
     "id": "cards",
     "components": [
       "card"

@@ -1,0 +1,124 @@
+/* Block: hero-doc -- values from source computed styles (www.doc.govt.nz) */
+
+/* Full-bleed: escape the section's max-width/padding container. */
+.hero-doc-container .hero-doc-wrapper {
+  max-width: 100% !important;
+  padding: 0;
+}
+
+.hero-doc {
+  position: relative;
+  display: block;
+}
+
+/* --- Background media --- */
+.hero-doc .hero-doc-image {
+  margin: 0;
+  height: 320px;
+}
+
+.hero-doc .hero-doc-image picture,
+.hero-doc .hero-doc-image p {
+  display: block;
+  margin: 0;
+}
+
+.hero-doc .hero-doc-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  object-fit: cover;
+  object-position: 50% 50%;
+}
+
+/* --- Content (caption + pills) --- */
+.hero-doc .hero-doc-content {
+  padding: 16px;
+}
+
+.hero-doc .hero-doc-content > div {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* White caption box around the H1 */
+.hero-doc .hero-doc-caption {
+  display: inline-block;
+  width: max-content;
+  max-width: 100%;
+  margin: 0;
+  padding: 12px 24px 16px;
+  background-color: var(--clr-white);
+}
+
+.hero-doc .hero-doc-caption h1 {
+  margin: 0;
+  padding: 0;
+  font-family: var(--heading-font-family);
+  font-size: 45px;
+  font-weight: 400;
+  line-height: 67.5px;
+  color: var(--text-color);
+}
+
+/* Wrapping row of quick-link pills */
+.hero-doc .hero-doc-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 12px 0 0;
+  padding: 0;
+}
+
+/* Pill buttons -- override global a.button + a:any-link */
+.hero-doc a.hero-doc-pill:any-link {
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
+  padding: 8px 12px;
+  border: 1px solid var(--text-color);
+  border-radius: 0;
+  background-color: rgb(255 255 255 / 80%);
+  color: var(--text-color);
+  font-family: var(--body-font-family);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 16px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+/* First pill is the gold primary CTA */
+.hero-doc a.hero-doc-pill-primary:any-link {
+  background-color: rgb(255 197 29 / 90%);
+  font-weight: 500;
+}
+
+.hero-doc a.hero-doc-pill:hover {
+  text-decoration: none;
+  background-color: var(--clr-white);
+  color: var(--text-color);
+}
+
+.hero-doc a.hero-doc-pill-primary:hover {
+  background-color: var(--color-doc-gold);
+}
+
+/* --- Desktop: overlay caption + pills at lower-left over the image --- */
+@media (width >= 900px) {
+  .hero-doc .hero-doc-image {
+    height: 600px;
+  }
+
+  .hero-doc .hero-doc-content {
+    position: absolute;
+    inset: auto auto 0 0;
+    width: 100%;
+    max-width: 1200px;
+    padding: 0 32px 48px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}

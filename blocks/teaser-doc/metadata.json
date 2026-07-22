@@ -1,0 +1,38 @@
+{
+  "variantName": "teaser-doc",
+  "baseBlock": "teaser",
+  "version": "1.0.0",
+  "created": "2026-07-22T00:00:00.000Z",
+  "sourceContext": {
+    "originUrl": "https://www.doc.govt.nz/",
+    "originPage": "DOC NZ homepage",
+    "blockPosition": "middle"
+  },
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "compact",
+    "purpose": "promo-highlight",
+    "imagePattern": "large"
+  },
+  "contentPattern": {
+    "structure": "image + title link + body + optional CTA",
+    "buttonCount": 1,
+    "imageCount": 1
+  },
+  "reuseGuidance": {
+    "suitableFor": [
+      "single featured highlight promos",
+      "labeled widget promos (e.g. Blog / Featured single item)",
+      "self-contained promotional cards with a heading and short body"
+    ],
+    "notSuitableFor": [
+      "grids of many uniform items (use cards)",
+      "full-width top-of-page banners (use hero)"
+    ]
+  },
+  "usage": {
+    "pagesUsing": ["/index"],
+    "reuseCount": 1,
+    "lastUsed": "2026-07-22T00:00:00.000Z"
+  }
+}

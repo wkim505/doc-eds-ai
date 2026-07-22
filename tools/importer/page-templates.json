@@ -1,0 +1,70 @@
+{
+  "metadata": {
+    "projectType": "xwalk"
+  },
+  "templates": [
+    {
+      "name": "homepage",
+      "urls": [
+        "https://www.doc.govt.nz/"
+      ],
+      "representativeUrl": "https://www.doc.govt.nz/",
+      "coverageGaps": [],
+      "description": "DOC NZ homepage with hero, featured highlight, blog teaser, featured cards, and media release cards",
+      "blocks": [
+        {
+          "name": "hero-doc",
+          "instances": [
+            ".doc-main-layout__hero"
+          ]
+        },
+        {
+          "name": "teaser-doc",
+          "instances": [
+            ".doc-homepage-layout__content_top > div.card",
+            ".doc-homepage-layout__content_top > div.widget"
+          ]
+        },
+        {
+          "name": "cards-doc",
+          "instances": [
+            ".doc-homepage-layout__content_bottom > div.widget:nth-of-type(1)",
+            ".doc-homepage-layout__content_bottom > div.widget:nth-of-type(2)"
+          ]
+        }
+      ],
+      "sections": [
+        {
+          "id": "rc3",
+          "name": "hero",
+          "selector": ".doc-main-layout__hero",
+          "style": null,
+          "blocks": [
+            "hero-doc"
+          ],
+          "defaultContent": []
+        },
+        {
+          "id": "rc4",
+          "name": "content_top",
+          "selector": ".doc-homepage-layout__content_top",
+          "style": "columns",
+          "blocks": [
+            "teaser-doc"
+          ],
+          "defaultContent": []
+        },
+        {
+          "id": "rc5",
+          "name": "content_bottom",
+          "selector": ".doc-homepage-layout__content_bottom",
+          "style": "columns",
+          "blocks": [
+            "cards-doc"
+          ],
+          "defaultContent": []
+        }
+      ]
+    }
+  ]
+}

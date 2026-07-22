@@ -1,0 +1,94 @@
+/* Block: cards-doc -- values extracted from source computed styles (www.doc.govt.nz) */
+
+/* The two widgets (Featured + Media releases) are laid out side by side by the
+ * global `main .section.columns` grid rule in styles.css. Within each widget,
+ * the cards themselves stack (mobile) / go 2-up (desktop) via the ul grid below. */
+
+.cards-doc > ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+  min-width: 0;
+}
+
+/* Card (li): white surface, subtle hover, no border */
+.cards-doc > ul > li {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+  padding: 24px 16px 0;
+  background-color: var(--clr-white);
+  transition: background-color 0.15s ease;
+}
+
+.cards-doc > ul > li:hover {
+  background-color: var(--light-color); /* maui-300 = #e9e7e3 */
+}
+
+/* Image at top */
+.cards-doc .cards-doc-card-image {
+  width: 100%;
+  padding-bottom: 8px;
+  line-height: 0;
+}
+
+.cards-doc .cards-doc-card-image p {
+  margin: 0;
+}
+
+.cards-doc > ul > li img {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  display: block;
+}
+
+/* Text body */
+.cards-doc .cards-doc-card-body {
+  width: 100%;
+}
+
+/* Heading link (charcoal, doc-green on hover) */
+.cards-doc .cards-doc-card-body h3 {
+  margin: 0;
+  padding-bottom: 8px;
+  font-family: var(--heading-font-family);
+  font-size: var(--heading-font-size-s); /* 18px */
+  font-weight: 500;
+  line-height: 27px;
+  color: var(--text-color); /* maui-600 = #384246 */
+}
+
+.cards-doc .cards-doc-card-body h3 a:any-link {
+  color: var(--text-color);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.cards-doc .cards-doc-card-body h3 a:hover {
+  color: var(--link-hover-color); /* doc-green = #194036 */
+  text-decoration: none;
+}
+
+/* Description */
+.cards-doc .cards-doc-card-body p {
+  margin: 0 0 16px;
+  font-family: var(--body-font-family);
+  font-size: var(--body-font-size-s); /* 16px */
+  font-weight: 400;
+  line-height: 24px;
+  color: var(--text-color);
+}
+
+/* Desktop */
+@media (width >= 900px) {
+  /* Two-column grid of cards inside each widget column (matches source 2x2) */
+  .cards-doc > ul {
+    grid-template-columns: 1fr 1fr;
+    column-gap: 8px;
+  }
+}
