@@ -1,0 +1,157 @@
+{
+  "metadata": {
+    "projectType": "xwalk"
+  },
+  "templates": [
+    {
+      "name": "homepage",
+      "urls": [
+        "https://www.doc.govt.nz/"
+      ],
+      "representativeUrl": "https://www.doc.govt.nz/",
+      "coverageGaps": [],
+      "description": "DOC NZ homepage with hero, featured highlight, blog teaser, featured cards, and media release cards",
+      "blocks": [
+        {
+          "name": "hero-doc",
+          "instances": [
+            ".doc-main-layout__hero"
+          ]
+        },
+        {
+          "name": "teaser-doc",
+          "instances": [
+            ".doc-homepage-layout__content_top > div.card",
+            ".doc-homepage-layout__content_top > div.widget"
+          ]
+        },
+        {
+          "name": "cards-doc",
+          "instances": [
+            ".doc-homepage-layout__content_bottom > div.widget:nth-of-type(1)",
+            ".doc-homepage-layout__content_bottom > div.widget:nth-of-type(2)"
+          ]
+        }
+      ],
+      "sections": [
+        {
+          "id": "rc3",
+          "name": "hero",
+          "selector": ".doc-main-layout__hero",
+          "style": null,
+          "blocks": [
+            "hero-doc"
+          ],
+          "defaultContent": []
+        },
+        {
+          "id": "rc4",
+          "name": "content_top",
+          "selector": ".doc-homepage-layout__content_top",
+          "style": "columns",
+          "blocks": [
+            "teaser-doc"
+          ],
+          "defaultContent": []
+        },
+        {
+          "id": "rc5",
+          "name": "content_bottom",
+          "selector": ".doc-homepage-layout__content_bottom",
+          "style": "columns",
+          "blocks": [
+            "cards-doc"
+          ],
+          "defaultContent": []
+        }
+      ]
+    },
+    {
+      "name": "places-to-go",
+      "urls": [
+        "https://www.doc.govt.nz/parks-and-recreation/places-to-go/"
+      ],
+      "representativeUrl": "https://www.doc.govt.nz/parks-and-recreation/places-to-go/",
+      "coverageGaps": [],
+      "description": "Parks & recreation section landing page: breadcrumb, hero with title, intro/overview, 'In this section' links, a search filter, and a regional hotspot map",
+      "blocks": [
+        {
+          "name": "hero-doc",
+          "instances": [
+            ".doc-main-layout__hero"
+          ]
+        },
+        {
+          "name": "cards-doc",
+          "instances": [
+            "div.doc-main-layout__main__container-content > div:nth-of-type(2)"
+          ]
+        },
+        {
+          "name": "columns-filter",
+          "instances": [
+            "div.doc-main-layout__main__container-content > div.bg-white.pb-4.pl-3.pr-3.pt-2"
+          ]
+        },
+        {
+          "name": "columns-map",
+          "instances": [
+            "div.doc-main-layout__main__container-content > div.hotspotmapblock"
+          ]
+        }
+      ],
+      "sections": [
+        {
+          "id": "rc3",
+          "name": "hero",
+          "selector": ".doc-main-layout__hero",
+          "style": null,
+          "blocks": [
+            "hero-doc"
+          ],
+          "defaultContent": []
+        },
+        {
+          "id": "rc4",
+          "name": "overview",
+          "selector": ".doc-standard-overview",
+          "style": null,
+          "blocks": [],
+          "defaultContent": [
+            ".doc-standard-overview__intro-text"
+          ]
+        },
+        {
+          "id": "rc5",
+          "name": "in-this-section",
+          "selector": "div.doc-main-layout__main__container-content > div:nth-of-type(2)",
+          "style": null,
+          "blocks": [
+            "cards-doc"
+          ],
+          "defaultContent": []
+        },
+        {
+          "id": "rc6",
+          "name": "search-filter",
+          "selector": "div.doc-main-layout__main__container-content > div.bg-white.pb-4.pl-3.pr-3.pt-2",
+          "style": null,
+          "blocks": [
+            "columns-filter"
+          ],
+          "defaultContent": []
+        },
+        {
+          "id": "rc7",
+          "name": "region-map",
+          "selector": "div.doc-main-layout__main__container-content > div.hotspotmapblock",
+          "style": null,
+          "blocks": [
+            "columns-map"
+          ],
+          "defaultContent": []
+        }
+      ]
+    }
+  ]
+}

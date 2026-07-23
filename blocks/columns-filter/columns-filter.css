@@ -1,0 +1,103 @@
+/* columns-filter: DOC NZ "Find places to go" filter card.
+   Source: doc.govt.nz places-to-go filter panel (values from computed styles). */
+
+/* Card panel: single content cell = the white card */
+.columns-filter > div > div {
+  background-color: var(--clr-white);
+  padding: 16px 24px 32px;
+}
+
+/* Heading */
+.columns-filter h2 {
+  margin: 0 0 16px;
+  font-family: var(--heading-font-family);
+  font-size: 31px;
+  font-weight: 500;
+  line-height: 46.5px;
+  color: var(--text-color);
+  text-transform: none;
+}
+
+/* Filter row: stacked on mobile, horizontal on desktop */
+.columns-filter .columns-filter-row {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 0 0 16px;
+}
+
+.columns-filter .columns-filter-field {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Label above each select box */
+.columns-filter .columns-filter-label {
+  margin-bottom: 4px;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  color: var(--text-color);
+}
+
+/* Select box: bordered rectangle showing the value ("Any"),
+   with a grey chevron cell on the right mimicking a native select. */
+.columns-filter .columns-filter-select {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 44px 0 12px;
+  border: 1px solid var(--text-color);
+  border-radius: 0;
+  background-color: transparent;
+  background-image: linear-gradient(var(--light-color), var(--light-color));
+  background-repeat: no-repeat;
+  background-position: right center;
+  background-size: 32px 100%;
+  font-size: 16px;
+  line-height: 24px;
+  color: rgb(53 73 94);
+  position: relative;
+}
+
+.columns-filter .columns-filter-select::after {
+  content: "";
+  position: absolute;
+  right: 12px;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid var(--text-color);
+  border-bottom: 2px solid var(--text-color);
+  transform: translateY(-2px) rotate(45deg);
+}
+
+/* Search button: green DOC button (flat rectangle) */
+.columns-filter a.button:any-link {
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  padding: 12px 20px;
+  min-width: 150px;
+  font-family: var(--body-font-family);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  text-transform: none;
+  background-color: var(--color-doc-green);
+  color: var(--clr-white);
+}
+
+.columns-filter .button-container {
+  margin: 0;
+}
+
+@media (width >= 900px) {
+  .columns-filter .columns-filter-row {
+    flex-direction: row;
+    gap: 32px;
+  }
+
+  .columns-filter .columns-filter-field {
+    flex: 1;
+  }
+}

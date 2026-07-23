@@ -1,0 +1,37 @@
+{
+  "variantName": "columns-filter",
+  "baseBlock": "columns",
+  "version": "1.0.0",
+  "created": "2026-07-22T00:00:00.000Z",
+  "sourceContext": {
+    "originUrl": "https://www.doc.govt.nz/parks-and-recreation/places-to-go/",
+    "originPage": "Places to go section landing page",
+    "blockPosition": "middle"
+  },
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "compact",
+    "purpose": "search-filter",
+    "imagePattern": "noimg"
+  },
+  "contentPattern": {
+    "structure": "heading + filter categories (Region/Place/Activity) + Search CTA",
+    "buttonCount": 1,
+    "imageCount": 0
+  },
+  "reuseGuidance": {
+    "suitableFor": [
+      "faceted 'find/search' filter panels captured as content + links",
+      "category-selection UIs where live filtering is not reproduced"
+    ],
+    "notSuitableFor": [
+      "true interactive client-side filtering (needs custom JS/index)",
+      "image-led side-by-side layouts (use a standard columns variant)"
+    ]
+  },
+  "usage": {
+    "pagesUsing": ["/parks-and-recreation/places-to-go/index"],
+    "reuseCount": 1,
+    "lastUsed": "2026-07-22T00:00:00.000Z"
+  }
+}

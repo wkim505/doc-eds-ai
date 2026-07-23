@@ -1,0 +1,121 @@
+/* teaser-doc block — DOC NZ
+ *
+ * A single promotional card matching the DOC homepage "card"/"widget" pattern:
+ * a full-width image on top, a maui-600 (charcoal) title bar with the heading
+ * in white Zilla Slab, a white body with charcoal description text, and an
+ * optional green DOC "More" button. The whole card gets a subtle maui-300
+ * background on hover.
+ *
+ * Values extracted from computed styles on www.doc.govt.nz — see
+ * migration-work/teaser-doc-extracted.css.
+ */
+
+main .teaser-doc {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background-color: var(--clr-white);   /* rgb(255, 255, 255) */
+  color: var(--text-color);             /* maui-600 #384246 */
+}
+
+/* Subtle hover — hover:bg-maui-300 on source */
+main .teaser-doc:hover {
+  background-color: var(--light-color); /* maui-300 #e9e7e3 */
+}
+
+/* Image on top — full width, object-fit cover */
+main .teaser-doc .teaser-doc-image {
+  width: 100%;
+  line-height: 0;
+}
+
+main .teaser-doc .teaser-doc-image picture,
+main .teaser-doc .teaser-doc-image img {
+  display: block;
+  width: 100%;
+}
+
+main .teaser-doc .teaser-doc-image img {
+  object-fit: cover;
+  aspect-ratio: 452 / 295; /* source card image ratio ~1.53 */
+}
+
+/* Title bar — full-width maui-600 charcoal bar (source: bg-maui-600 px-2 py-1) */
+main .teaser-doc .teaser-doc-title-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 16px;
+  background-color: var(--dark-color);  /* maui-600 #384246 */
+}
+
+main .teaser-doc .teaser-doc-title {
+  margin: 0;
+  font-family: var(--heading-font-family); /* Zilla Slab */
+  font-size: var(--heading-font-size-xl);  /* 32px desktop / 28px mobile */
+  font-weight: 500;
+  line-height: 1.5;                        /* 48px at 32px — matches source */
+  color: var(--clr-white);
+}
+
+/* Body — white area with padding (source: card body px-1/px-2, pb-2) */
+main .teaser-doc .teaser-doc-body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 16px;
+}
+
+main .teaser-doc .teaser-doc-text {
+  font-family: var(--body-font-family);
+  font-size: var(--body-font-size-s);   /* 16px */
+  line-height: 1.5;                     /* 24px / 16px */
+  color: var(--text-color);             /* maui-600 */
+}
+
+main .teaser-doc .teaser-doc-text p {
+  margin: 0 0 16px;
+}
+
+main .teaser-doc .teaser-doc-text p:last-child {
+  margin-bottom: 0;
+}
+
+/* CTA — green DOC button (source: bg-doc-green-500, white, 12px 20px) */
+main .teaser-doc .teaser-doc-cta {
+  margin: 16px 0 0;
+}
+
+main .teaser-doc a.button:any-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 0;
+  padding: 12px 20px;
+  border: 0;
+  border-radius: 0;
+  background-color: var(--color-doc-green); /* #194036 */
+  color: var(--clr-white);
+  font-family: var(--body-font-family);
+  font-size: var(--body-font-size-s);       /* 16px */
+  font-weight: 400;
+  line-height: 1.5;
+  text-decoration: none;
+}
+
+main .teaser-doc a.button:hover,
+main .teaser-doc a.button:focus {
+  background-color: var(--link-hover-color); /* doc-green #194036 (kept dark) */
+  color: var(--clr-white);
+  text-decoration: none;
+}
+
+main .teaser-doc a.button:focus-visible {
+  outline: 2px solid var(--color-doc-gold);
+  outline-offset: 2px;
+}

@@ -1,0 +1,41 @@
+{
+  "variantName": "cards-doc",
+  "baseBlock": "cards",
+  "version": "1.0.0",
+  "created": "2026-07-22T00:00:00.000Z",
+  "sourceContext": {
+    "originUrl": "https://www.doc.govt.nz/",
+    "originPage": "DOC NZ homepage",
+    "blockPosition": "bottom"
+  },
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "compact",
+    "purpose": "news-cards",
+    "imagePattern": "large"
+  },
+  "contentPattern": {
+    "structure": "grid of cards, each image + heading link + description",
+    "buttonCount": 0,
+    "imageCount": 4
+  },
+  "reuseGuidance": {
+    "suitableFor": [
+      "featured content grids",
+      "news / media release listings",
+      "any grid of uniform items with image + title + description"
+    ],
+    "notSuitableFor": [
+      "single promotional highlights (use teaser)",
+      "side-by-side comparison layouts (use columns)"
+    ]
+  },
+  "usage": {
+    "pagesUsing": [
+      "/index",
+      "/parks-and-recreation/places-to-go/index"
+    ],
+    "reuseCount": 2,
+    "lastUsed": "2026-07-22T00:00:00.000Z"
+  }
+}

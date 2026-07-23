@@ -1,0 +1,15 @@
+{
+  "status": "success",
+  "url": "https://www.doc.govt.nz/",
+  "path": "index",
+  "timestamp": "2026-07-22T21:35:33.729Z",
+  "title": "Department of Conservation",
+  "template": "homepage",
+  "blocks": [
+    "hero-doc",
+    "teaser-doc",
+    "teaser-doc",
+    "cards-doc",
+    "cards-doc"
+  ]
+}
