@@ -1,0 +1,81 @@
+/* columns-map — "Or select a region"
+ * Source: https://www.doc.govt.nz/parks-and-recreation/places-to-go/
+ * The source is an interactive NZ map on a light-blue (#e5f5fe) area inside a
+ * white panel. We cannot reproduce the geographic map, so the 20 region links
+ * are rendered as a responsive grid of bordered link tiles that reuse the
+ * site's shared "In this section" link-tile pattern
+ * (border 1px solid maui-600, bg white/85, hover opacity 0.7). The block is
+ * given the light-blue panel background to echo the source map area. */
+
+.columns-map {
+  background-color: #e5f5fe; /* source map-area light blue */
+  padding: 8px 24px 32px; /* echoes source panel padding (pb-4 pl-3 pr-3) */
+}
+
+/* Heading: "Or select a region" — Zilla Slab, matches source computed styles */
+.columns-map h2 {
+  font-family: var(--heading-font-family);
+  font-size: 38px;
+  font-weight: 500;
+  line-height: 57px;
+  color: var(--text-color); /* rgb(56, 66, 70) = maui-600 */
+  margin: 24px 0 16px;
+}
+
+/* Region link tiles — reuse the shared site link-tile pattern */
+.columns-map ul {
+  display: grid;
+  grid-template-columns: 1fr; /* single column on mobile */
+  gap: 12px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.columns-map li {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.columns-map li a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px; /* gap-2.5 */
+  border: 1px solid var(--dark-color); /* 1px solid maui-600 */
+  border-radius: 0;
+  background-color: rgb(255 255 255 / 85%); /* bg-white/85 */
+  color: var(--text-color);
+  padding: 16px 12px 16px 20px;
+  font-family: var(--body-font-family);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  text-decoration: none;
+}
+
+.columns-map li a::after {
+  content: "→";
+  flex: 0 0 auto;
+  color: var(--text-color);
+  font-size: 16px;
+  line-height: 1;
+}
+
+.columns-map li a:hover {
+  opacity: 0.7;
+  color: var(--text-color);
+  text-decoration: none;
+}
+
+@media (width >= 900px) {
+  .columns-map {
+    padding: 8px 24px 32px;
+  }
+
+  .columns-map ul {
+    grid-template-columns: 1fr 1fr; /* two columns of region tiles */
+    gap: 12px 16px;
+  }
+}

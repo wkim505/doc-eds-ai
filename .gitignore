@@ -17,4 +17,4 @@ tools/jira/.venv/
 tools/jira/.env
 tools/jira/run-summary.json
 __pycache__/
-*.pyc
+*.pycmigration-work/navigation-validation/

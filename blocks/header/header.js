@@ -2,9 +2,31 @@ import { getMetadata } from '../../scripts/aem.js';
 import { moveInstrumentation } from '../../scripts/scripts.js';
 import { loadFragment } from '../fragment/fragment.js';
 
-const SECTION_COLOURS = ['ranginui', 'paptuanuku', 'atawhenua', 'weta'];
-
 const isMobile = window.matchMedia('(max-width: 767.98px)');
+
+// DOC themes each top-level section's dropdown with a distinct colour, keyed by
+// the section's landing-page path. Values map to --color-{name} tokens in styles.css.
+const SECTION_COLOUR_BY_PATH = {
+  '/parks-and-recreation/': 'ranginui',
+  '/nature/': 'paptuanuku',
+  '/get-involved/': 'atawhenua',
+  '/our-work/': 'weta',
+};
+
+/**
+ * Resolve a section colour name from a section landing-page href.
+ * @param {string} href
+ * @returns {string|null}
+ */
+function sectionColourFromHref(href) {
+  if (!href) return null;
+  try {
+    const path = new URL(href, window.location.origin).pathname;
+    return SECTION_COLOUR_BY_PATH[path] || null;
+  } catch (e) {
+    return SECTION_COLOUR_BY_PATH[href] || null;
+  }
+}
 
 /**
  * Close all open mega-menu items.
@@ -62,39 +84,26 @@ function buildPrintHeader() {
 }
 
 /**
- * Resolve which section colour class is on a `Nav Section` block element.
- * @param {Element} blockEl
- * @returns {string|null}
+ * Build one top-level nav <li> with a dropdown, from a flat-semantic source:
+ *   <h2><a href>Section</a></h2>   ← the top-level trigger (also a link)
+ *   <ul> … main sub-links … </ul>
+ *   <h3>Popular</h3>
+ *   <ul> … popular links … </ul>
+ *
+ * @param {Element} headingEl   the <h2> heading element (section trigger)
+ * @param {Element[]} followers the sibling elements after the heading, up to the
+ *                              next <h2> (a mix of <ul> lists and a <h3>Popular label)
  */
-function findSectionColour(blockEl) {
-  return SECTION_COLOURS.find((c) => blockEl.classList.contains(c)) || null;
-}
-
-/**
- * Convert a `Nav Section` UE block into a decorated <li> with sub-link list and
- * an optional Popular panel.
- *
- * Each row of the block is one `Nav Item` with two cells:
- *   cell 0: <a href>linkText</a>  (collapsed link + linkText)
- *   cell 1: "true" | "false"      (the boolean `popular` field)
- *
- * The section heading + section href are read from the heading element that
- * immediately precedes the block in the source fragment.
- *
- * @param {Element} blockEl       the `.nav-section` block element
- * @param {Element|null} headingEl the heading (e.g. <h3>) preceding the block
- */
-function buildNavItem(blockEl, headingEl) {
+function buildNavItem(headingEl, followers) {
   const li = document.createElement('li');
-  moveInstrumentation(blockEl, li);
+  moveInstrumentation(headingEl, li);
 
-  const colour = findSectionColour(blockEl);
-  if (colour) li.classList.add(`section-${colour}`);
-
-  // Section heading link
-  const headingLink = headingEl?.querySelector('a');
+  const headingLink = headingEl.querySelector('a');
   const sectionHref = headingLink?.getAttribute('href') || '#';
-  const sectionLabel = (headingLink?.textContent || headingEl?.textContent || '').trim();
+  const sectionLabel = (headingLink?.textContent || headingEl.textContent || '').trim();
+
+  const colour = sectionColourFromHref(sectionHref);
+  if (colour) li.classList.add(`section-${colour}`);
 
   const mainLink = document.createElement('a');
   mainLink.href = sectionHref;
@@ -102,23 +111,30 @@ function buildNavItem(blockEl, headingEl) {
   if (headingLink) moveInstrumentation(headingLink, mainLink);
   li.append(mainLink);
 
-  // Split rows into sub-links and popular-links by reading the boolean cell.
   const subLinks = document.createElement('ul');
   const popularLinks = document.createElement('ul');
 
-  Array.from(blockEl.children).forEach((row) => {
-    const [linkCell, popularCell] = row.children;
-    const a = linkCell?.querySelector('a');
-    if (!a) return;
-    // EDS auto-decorates standalone <a> elements as `<a class="button">`. Strip
-    // the styling classes so the link renders as a plain dropdown entry.
-    a.classList.remove('button');
-    a.closest('.button-container')?.classList.remove('button-container');
-    const isPopular = (popularCell?.textContent || '').trim().toLowerCase() === 'true';
-    const item = document.createElement('li');
-    moveInstrumentation(row, item);
-    item.append(a);
-    (isPopular ? popularLinks : subLinks).append(item);
+  // Walk followers: <ul> before a "Popular" <h3> → sub-links; after → popular.
+  let inPopular = false;
+  followers.forEach((el) => {
+    if (/^H[1-6]$/.test(el.tagName)) {
+      if (/popular/i.test(el.textContent || '')) inPopular = true;
+      return;
+    }
+    if (el.tagName !== 'UL') return;
+    el.querySelectorAll(':scope > li').forEach((srcLi) => {
+      const a = srcLi.querySelector('a');
+      if (!a) return;
+      // EDS auto-decorates standalone <a> as `<a class="button">`; strip it.
+      a.classList.remove('button');
+      a.closest('.button-container')?.classList.remove('button-container');
+      const item = document.createElement('li');
+      const link = document.createElement('a');
+      link.href = a.getAttribute('href') || '#';
+      link.textContent = (a.textContent || '').trim();
+      item.append(link);
+      (inPopular ? popularLinks : subLinks).append(item);
+    });
   });
 
   if (subLinks.children.length === 0 && popularLinks.children.length === 0) {
@@ -153,18 +169,34 @@ function buildNavItem(blockEl, headingEl) {
 }
 
 function wireNavSectionToggles(navSections) {
+  // Delay closing so the cursor can traverse the gap between a trigger and its
+  // panel (and between adjacent triggers) without the dropdown vanishing.
+  const CLOSE_DELAY_MS = 200;
+
   const drops = navSections.querySelectorAll('.nav-drop');
   drops.forEach((drop) => {
     const mainLink = drop.querySelector(':scope > a');
+    let closeTimer = null;
+
+    const cancelClose = () => {
+      if (closeTimer) {
+        clearTimeout(closeTimer);
+        closeTimer = null;
+      }
+    };
 
     const open = () => {
       if (isMobile.matches) return;
+      cancelClose();
       closeAllSections(navSections);
       drop.setAttribute('aria-expanded', 'true');
     };
     const close = () => {
       if (isMobile.matches) return;
-      drop.setAttribute('aria-expanded', 'false');
+      cancelClose();
+      closeTimer = setTimeout(() => {
+        drop.setAttribute('aria-expanded', 'false');
+      }, CLOSE_DELAY_MS);
     };
 
     drop.addEventListener('mouseenter', open);
@@ -191,8 +223,11 @@ function wireNavSectionToggles(navSections) {
 }
 
 /**
- * Build the mega-nav <ul> by walking the sections-source children, pairing
- * each heading element with the next sibling `.nav-section` block.
+ * Build the mega-nav <ul> from a flat-semantic source. The section container
+ * holds a repeating sequence of: <h2> (top-level trigger), one or more <ul>
+ * lists, and a <h3>Popular</h3> label separating main sub-links from popular
+ * links. Each <h2> starts a new top-level item; everything up to the next <h2>
+ * belongs to that item.
  * @param {Element} sectionsSrc
  */
 function buildSections(sectionsSrc) {
@@ -202,28 +237,34 @@ function buildSections(sectionsSrc) {
 
   const ul = document.createElement('ul');
 
-  // EDS wraps default content into .default-content-wrapper and each block into
-  // .{block-name}-wrapper. Walk the wrappers in order and pair each heading
-  // (last heading we saw) with the next .nav-section block.
-  let pendingHeading = null;
-
-  const walk = (root) => {
+  // Flatten: EDS may wrap default content in .default-content-wrapper. Collect
+  // the meaningful children (headings + lists) in document order.
+  const nodes = [];
+  const collect = (root) => {
     Array.from(root.children).forEach((child) => {
-      if (/^H[1-6]$/.test(child.tagName)) {
-        pendingHeading = child;
-        return;
+      if (/^(H[1-6]|UL)$/.test(child.tagName)) {
+        nodes.push(child);
+      } else if (child.children.length > 0) {
+        collect(child);
       }
-      if (child.classList?.contains('nav-section')) {
-        const li = buildNavItem(child, pendingHeading);
-        ul.append(li);
-        pendingHeading = null;
-        return;
-      }
-      // Recurse into wrappers (default-content-wrapper, nav-section-wrapper).
-      if (child.children.length > 0) walk(child);
     });
   };
-  walk(sectionsSrc);
+  collect(sectionsSrc);
+
+  // Group each H2 with its following siblings up to the next H2.
+  for (let i = 0; i < nodes.length; i += 1) {
+    if (nodes[i].tagName === 'H2') {
+      const heading = nodes[i];
+      const followers = [];
+      let j = i + 1;
+      while (j < nodes.length && nodes[j].tagName !== 'H2') {
+        followers.push(nodes[j]);
+        j += 1;
+      }
+      ul.append(buildNavItem(heading, followers));
+      i = j - 1;
+    }
+  }
 
   navSections.append(ul);
   return navSections;
@@ -362,27 +403,24 @@ function buildTools(toolsSrc) {
 }
 
 /**
- * Build the ABN CTA from a `Nav CTA` block. The block's two rows are:
- *   row 0: <div><a href>label</a></div>
- *   row 1: <div><picture>...</picture></div>
- * @param {Element|null} ctaBlock
+ * Build the ABN CTA from the tools source. The ABN link is the one whose href
+ * contains "always-be-naturing"; it wraps a logo image (picture or img).
+ * @param {Element|null} toolsSrc
  */
-function buildAbnCta(ctaBlock) {
-  if (!ctaBlock) return null;
-  const link = ctaBlock.querySelector('a');
-  const picture = ctaBlock.querySelector('picture');
+function buildAbnCta(toolsSrc) {
+  if (!toolsSrc) return null;
+  const link = Array.from(toolsSrc.querySelectorAll('a'))
+    .find((a) => /always-be-naturing/i.test(a.getAttribute('href') || ''));
   if (!link) return null;
+  const media = link.querySelector('picture') || link.querySelector('img');
   const a = document.createElement('a');
   a.href = link.getAttribute('href') || '#';
   a.className = 'nav-abn-cta';
-  if (!a.getAttribute('aria-label')) {
-    a.setAttribute('aria-label', link.textContent.trim() || 'Always Be Naturing');
-  }
-  moveInstrumentation(ctaBlock, a);
-  if (picture) {
-    a.append(picture);
+  a.setAttribute('aria-label', (link.textContent || '').trim() || 'Always Be Naturing');
+  if (media) {
+    a.append(media);
   } else {
-    a.textContent = link.textContent.trim() || 'Always Be Naturing';
+    a.textContent = (link.textContent || '').trim() || 'Always Be Naturing';
   }
   return a;
 }
@@ -393,7 +431,7 @@ function buildAbnCta(ctaBlock) {
  */
 export default async function decorate(block) {
   const navMeta = getMetadata('nav');
-  const navPath = navMeta ? new URL(navMeta, window.location).pathname : '/nav';
+  const navPath = navMeta ? new URL(navMeta, window.location).pathname : '/content/nav';
   const fragment = await loadFragment(navPath);
 
   block.textContent = '';
@@ -444,8 +482,7 @@ export default async function decorate(block) {
 
   // Tools + ABN CTA
   const navTools = buildTools(toolsSrc);
-  const abnBlock = toolsSrc?.querySelector('.nav-cta');
-  const abnCta = buildAbnCta(abnBlock);
+  const abnCta = buildAbnCta(toolsSrc);
 
   const navAbnSlot = document.createElement('div');
   navAbnSlot.className = 'nav-abn-slot';

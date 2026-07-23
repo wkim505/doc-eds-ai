@@ -1,0 +1,14 @@
+{
+  "status": "success",
+  "url": "https://www.doc.govt.nz/parks-and-recreation/places-to-go/",
+  "path": "parks-and-recreation/places-to-go",
+  "timestamp": "2026-07-22T22:53:23.138Z",
+  "title": "Places to go: Parks and recreation",
+  "template": "places-to-go",
+  "blocks": [
+    "hero-doc",
+    "cards-doc",
+    "columns-filter",
+    "columns-map"
+  ]
+}
